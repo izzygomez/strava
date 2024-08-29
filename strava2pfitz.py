@@ -16,6 +16,27 @@ STRAVA_REFRESH_TOKEN = os.getenv("STRAVA_REFRESH_TOKEN")
 GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH = os.getenv("GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH")
 GOOGLE_SHEETS_SHEET_NAME = os.getenv("GOOGLE_SHEETS_SHEET_NAME")
 
+
+def validate_env_vars():
+    """Ensure all required environment variables are set."""
+    required_vars = [
+        "STRAVA_CLIENT_ID",
+        "STRAVA_CLIENT_SECRET",
+        "STRAVA_REFRESH_TOKEN",
+        "GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH",
+        "GOOGLE_SHEETS_SHEET_NAME",
+    ]
+
+    for var in required_vars:
+        if not os.getenv(var):
+            raise EnvironmentError(
+                f"Environment variable {var} is not set or is empty."
+            )
+
+
+# Validate environment variables
+validate_env_vars()
+
 # DEBUG
 # print("Strava Client ID:", STRAVA_CLIENT_ID)
 # print("Strava Client Secret:", STRAVA_CLIENT_SECRET)
@@ -210,15 +231,14 @@ if __name__ == "__main__":
 
     # Define your date range. End date is non-inclusive.
     start_date = datetime(2024, 6, 17)
-    end_date = datetime(2024, 8, 29)
+    end_date = datetime(2024, 10, 14)
     print("Fetching Strava activities from", start_date, "to", end_date)
 
     all_activities = get_strava_activities(access_token, start_date, end_date)
     # After fetching all activities, sort them by the start date. This will ensure they're in
     # the correct order when updating the Google Sheet.
     all_activities = sorted(
-        all_activities,
-        key=lambda x: datetime.strptime(x["start_date_local"], "%Y-%m-%dT%H:%M:%SZ"),
+        all_activities, key=lambda x: datetime.fromisoformat(x["start_date_local"][:-1])
     )
     # print("length of all_activities: ", len(all_activities))  # DEBUG
 
