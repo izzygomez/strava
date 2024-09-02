@@ -1,4 +1,4 @@
-# don't commit .env file
+# don't commit .env file with API credentials
 .env
 # don't commit google sheets credentials JSON file
 *.json
