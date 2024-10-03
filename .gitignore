@@ -2,3 +2,5 @@
 .env
 # don't commit google sheets credentials JSON file
 *.json
+# no python compiled files
+__pycache__/

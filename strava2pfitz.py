@@ -1,10 +1,12 @@
 import os
-from dotenv import load_dotenv
-import requests
 from datetime import datetime
+
+import google_sheets
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from dateutil import parser
+from dotenv import load_dotenv
+
+import strava
 
 # Load environment variables from a .env file. `override` flag allows us to update .env vars.
 load_dotenv(override=True)
@@ -43,86 +45,6 @@ validate_env_vars()
 # print("Strava Refresh Token:", STRAVA_REFRESH_TOKEN)
 # print("Google Sheets JSON Keyfile Full Path:", GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH)
 # print("Google Sheets Sheet Name:", GOOGLE_SHEETS_SHEET_NAME)
-
-
-def get_strava_access_token(client_id, client_secret, refresh_token):
-    """Get a new access token using the Strava API."""
-    try:
-        response = requests.post(
-            url="https://www.strava.com/oauth/token",
-            data={
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "refresh_token": refresh_token,
-                "grant_type": "refresh_token",
-                "f": "json",
-            },
-        )
-        response.raise_for_status()  # Raise an error for bad responses
-        return response.json()["access_token"]
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to get Strava access token: {e}")
-        raise
-
-
-def get_strava_activities(access_token, start_date, end_date, per_page=200):
-    """Get all activities between the start and end date using the Strava API."""
-    url = "https://www.strava.com/api/v3/athlete/activities"
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    all_activities = []
-    page = 1
-
-    while True:
-        params = {
-            "after": start_date.timestamp(),
-            "before": end_date.timestamp(),
-            "per_page": per_page,
-            "page": page,
-        }
-        try:
-            response = requests.get(url, headers=headers, params=params)
-            response.raise_for_status()  # Raise an error for bad responses
-            activities = response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Failed to fetch activities from Strava: {e}")
-            raise
-
-        if not activities:
-            break
-
-        all_activities.extend(activities)
-        page += 1
-
-    # print("number of API calls made to get all_activities: ", page - 1)  # DEBUG
-    return all_activities
-
-
-def connect_to_google_sheets(json_keyfile_name, sheet_name):
-    """Connect to a Google Sheet using the given JSON keyfile and sheet name."""
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(json_keyfile_name, scope)
-    client = gspread.authorize(creds)
-    sheet = client.open(sheet_name).sheet1
-    return sheet
-
-
-def find_cell_index(sheet, header_name):
-    """Find the index of the cell with the given header name."""
-    for row_num in range(1, sheet.row_count + 1):
-        row_values = sheet.row_values(row_num)
-        for idx, value in enumerate(row_values):
-            if value == header_name:
-                return (
-                    idx + 1,
-                    row_num,
-                )  # Return both column index and the row number where header is found
-    raise ValueError(f"Header '{header_name}' not found.")
 
 
 def get_emoji_for_activity_type(activity_type):
@@ -225,7 +147,7 @@ if __name__ == "__main__":
     # 1) Create a Strava App at https://www.strava.com/settings/api to get client_id & client_secret
     # 2) Get refresh_token by following the instructions at https://developers.strava.com/docs/getting-started/#oauth
     #    Note that this refresh token needs to have the 'activity:read_all' scope.
-    access_token = get_strava_access_token(
+    access_token = strava.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
 
@@ -234,7 +156,7 @@ if __name__ == "__main__":
     end_date = datetime(2024, 10, 14)
     print("Fetching Strava activities from", start_date, "to", end_date)
 
-    all_activities = get_strava_activities(access_token, start_date, end_date)
+    all_activities = strava.get_strava_activities(access_token, start_date, end_date)
     # After fetching all activities, sort them by the start date. This will ensure they're in
     # the correct order when updating the Google Sheet.
     all_activities = sorted(
@@ -246,14 +168,14 @@ if __name__ == "__main__":
     # Connect to the Google Sheet
     # Credentials file that was downloaded from Google Developer Console after creating
     # a new project, enabling the Google Sheets API, & creating a service account.
-    sheet = connect_to_google_sheets(
+    sheet = google_sheets.connect_to_google_sheets(
         GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
         GOOGLE_SHEETS_SHEET_NAME,
     )
 
     # Find the 'Strava Links' & 'Date' header cell locations
-    strava_column, strava_row = find_cell_index(sheet, "Strava Links")
-    date_column, date_row = find_cell_index(sheet, "Date")
+    strava_column, strava_row = google_sheets.find_cell_index(sheet, "Strava Links")
+    date_column, date_row = google_sheets.find_cell_index(sheet, "Date")
     strava_a1 = gspread.utils.rowcol_to_a1(strava_row, strava_column)
     date_a1 = gspread.utils.rowcol_to_a1(date_row, date_column)
     # print(f"'Strava Links' header is at {strava_a1}")  # DEBUG

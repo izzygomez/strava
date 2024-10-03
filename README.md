@@ -14,5 +14,4 @@ For an example of how this script is used, see the rightmost column of [izzygome
 
 ## TODOs
 
-- Split up `strava2pfitz.py` into `strava.py`, `google_sheets.py`, etc.
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
