@@ -22,7 +22,7 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
 
 
 def get_strava_activities(access_token, start_date, end_date, per_page=200):
-    """Get all activities between the start and end date using the Strava API.
+    """Get all activities in [start_date, end_date) using the Strava API. Not sorted.
 
     Note that this endpoint [1] returns an array of SummaryActivity [2] objects, which may not
     contain all the data associated with an activity. If you need more details, you can use the
