@@ -54,16 +54,13 @@ def erie_marathon_check():
     # print("Erie Marathon description:", erie_marathon_detailed["description"])
 
 
-def longest_workout_breaks(additional_breaks=0):
-    """Find the longest breaks between workouts since a given date.
+def longest_workout_breaks(
+    start_date: datetime, end_date: datetime, additional_breaks=0
+):
+    """Find the longest breaks in [start_date, end_date).
 
     Prints the longest break and, if specified, the next 'additional_breaks' longest breaks.
     """
-
-    # Define your date range. End date is non-inclusive.
-    start_date = datetime(2024, 1, 1)
-    end_date = datetime(2024, 10, 10)
-
     # Fetch Strava activities from the specified date range
     all_activities = strava.get_strava_activities(ACCESS_TOKEN, start_date, end_date)
 
@@ -83,7 +80,7 @@ def longest_workout_breaks(additional_breaks=0):
     # )
 
     print(
-        "Processing %d activities from Strava between %s & %s"
+        "Processing %d activities from Strava between %s & %s."
         % (len(all_activities), start_date.date(), end_date.date())
     )
 
@@ -136,7 +133,7 @@ def longest_workout_breaks(additional_breaks=0):
 
     # Print the longest break
     longest_break = sorted_break_lengths[0]
-    print("\nThe longest break (in days) between workouts is", longest_break, "days.")
+    print("\nThe longest break between workouts is", longest_break, "days.")
     if len(breaks[longest_break]) > 1:
         print(
             "There are multiple breaks (%d) of this length. They are between:"
@@ -153,7 +150,7 @@ def longest_workout_breaks(additional_breaks=0):
     # Print additional longest breaks if requested
     for i in range(1, min(additional_breaks + 1, len(sorted_break_lengths))):
         next_longest_break = sorted_break_lengths[i]
-        print("\nThe next longest break (in days) is", next_longest_break, "days.")
+        print("\nThe next longest break is", next_longest_break, "days.")
         if len(breaks[next_longest_break]) > 1:
             print(
                 "There are multiple breaks (%d) of this length. They are between:"
@@ -168,4 +165,7 @@ def longest_workout_breaks(additional_breaks=0):
 
 if __name__ == "__main__":
     # erie_marathon_check()
-    longest_workout_breaks(additional_breaks=3)
+
+    start_date = datetime(2023, 1, 1)
+    end_date = datetime(2024, 10, 10)
+    longest_workout_breaks(start_date, end_date, additional_breaks=3)
