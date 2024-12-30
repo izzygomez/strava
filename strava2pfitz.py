@@ -152,8 +152,8 @@ if __name__ == "__main__":
     )
 
     # Define your date range. End date is non-inclusive.
-    start_date = datetime(2024, 6, 17)
-    end_date = datetime(2024, 10, 14)
+    start_date = datetime(2024, 12, 31)
+    end_date = datetime(2025, 6, 9)
     print("Fetching Strava activities from", start_date, "to", end_date)
 
     all_activities = strava.get_strava_activities(access_token, start_date, end_date)
