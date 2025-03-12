@@ -3,3 +3,7 @@ requests
 gspread
 oauth2client
 python-dateutil
+# added for google cal integration
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

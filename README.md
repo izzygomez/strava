@@ -1,16 +1,32 @@
 # Strava Scripts
 
-Repo to contain useful scripts for interacting with my Strava data.
+Useful scripts for working with Strava data. A lot of functionality is based on my own personal use cases, but for the most part everything is written generically & with appropriate setup instructions to be adapted by others.
+
+Do note, though, that a lot of code here is still a 🚧 work-in-progress 🚧.
+
+## Setup
+
+See [SETUP.md](SETUP.md) for setup instructions.
 
 ## Usage
 
-`strava2pfitz.py`
+Assuming all setup steps have been completed, the following scripts are available for use:
 
-- Create & fill in `.env` file, & download Google Sheets JSON keyfile.
-- Install the required dependencies: `pip install -r requirements.txt`
-- Run: `python strava2pfitz.py`
+#### strava_to_pfitz.py
 
-For an example of how this script is used, see the rightmost column of [izzygomez.com/r/erie2024](https://izzygomez.com/r/erie2024).
+`python -m scripts.strava_to_pfitz`
+
+Script to convert Strava activities into clickable links in Google Sheets tracking a Pfitzinger training plan. For an example of what this script does, see the rightmost column of [izzy.gg/r/vancouver2025](https://izzy.gg/r/vancouver2025).
+
+#### strava_to_gcal.py
+
+`python -m scripts.strava_to_gcal`
+
+Script to create Google Calendar events for Strava activities on specified calendar.
+
+#### Everything else in scripts/
+
+Misc tasks that are personalized to my own use case. Not recommended for general use.
 
 ## TODOs
 

@@ -1,6 +1,8 @@
 # don't commit .env file with API credentials
 .env
-# don't commit google sheets credentials JSON file
+# don't commit any credentials JSON files
 *.json
+# don't commit exported text files
+*-export.txt
 # no python compiled files
 __pycache__/

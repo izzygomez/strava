@@ -1,27 +1,13 @@
-import os
-import time
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import pytz
-from dotenv import load_dotenv
 
-import strava
+from services import strava_api
+from utils import time_utils
+from utils.load_env import STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
 
-# Load environment variables from a .env file. `override` flag allows us to update .env vars.
-load_dotenv(override=True)
-
-# Get credentials from environment variables
-STRAVA_CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
-STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
-STRAVA_REFRESH_TOKEN = os.getenv("STRAVA_REFRESH_TOKEN")
-
-### Strava stuff
-# Strava API credentials
-# 1) Create a Strava App at https://www.strava.com/settings/api to get client_id & client_secret
-# 2) Get refresh_token by following the instructions at https://developers.strava.com/docs/getting-started/#oauth
-#    Note that this refresh token needs to have the 'activity:read_all' scope.
-ACCESS_TOKEN = strava.get_strava_access_token(
+ACCESS_TOKEN = strava_api.get_strava_access_token(
     STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
 )
 
@@ -33,21 +19,18 @@ def erie_marathon_check():
     # Define your date range. End date is non-inclusive.
     start_date = datetime(2024, 9, 8)
     end_date = datetime(2024, 9, 9)
-    # print("Fetching Strava activities from", start_date, "to", end_date)
 
-    all_activities = strava.get_strava_activities(ACCESS_TOKEN, start_date, end_date)
-    # After fetching all activities, sort them by the start date. This will ensure they're in
-    # the correct order when updating the Google Sheet.
-    all_activities = sorted(
-        all_activities, key=lambda x: datetime.fromisoformat(x["start_date_local"][:-1])
+    all_activities = strava_api.get_strava_activities(
+        ACCESS_TOKEN, start_date, end_date, log=True
     )
+
     # print("length of all_activities: ", len(all_activities))  # DEBUG
     # for activity in all_activities:
-    #     print(activity["name"], activity["start_date_local"], activity["distance"])
+    #     print(activity["name"], activity["start_date"], activity["distance"])
     # print(activity)  # DEBUG
     erie_marathon_summary = all_activities[1]
 
-    erie_marathon_detailed = strava.get_strava_activity(
+    erie_marathon_detailed = strava_api.get_strava_activity(
         ACCESS_TOKEN, erie_marathon_summary["id"]
     )
     for key, value in erie_marathon_detailed.items():
@@ -55,25 +38,21 @@ def erie_marathon_check():
     # print("Erie Marathon description:", erie_marathon_detailed["description"])
 
 
-# TODO consider adding an optional filter for different workout types, e.g. only runs
+# TODO consider adding an optional filter for different sport types, e.g. only runs
 def longest_workout_breaks(
-    start_date: datetime, end_date: datetime, additional_breaks=0, activity_type=None
+    start_date: datetime, end_date: datetime, additional_breaks=0, sport_type=None
 ):
     """Find the longest breaks in [start_date, end_date).
 
     Prints the longest break &, if specified, the next 'additional_breaks' longest breaks.
     """
-    # Fetch Strava activities from the specified date range
-    all_activities = strava.get_strava_activities(ACCESS_TOKEN, start_date, end_date)
+    all_activities = strava_api.get_strava_activities(
+        ACCESS_TOKEN, start_date, end_date
+    )
 
     if len(all_activities) < 2:
         print("Not enough activities to calculate a break.")
         return
-
-    # Sort activities by start date (already in local timezone per API docs)
-    all_activities = sorted(
-        all_activities, key=lambda x: datetime.fromisoformat(x["start_date_local"][:-1])
-    )
 
     # DEBUG
     # print(
@@ -169,6 +148,5 @@ if __name__ == "__main__":
     # erie_marathon_check()
 
     start_date = datetime(2024, 1, 1)
-    # end_date = datetime(2024, 10, 10)
-    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = time_utils.n_days_from_today(1)
     longest_workout_breaks(start_date, tomorrow, additional_breaks=3)
