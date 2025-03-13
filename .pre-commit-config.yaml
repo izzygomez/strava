@@ -1,0 +1,31 @@
+repos:
+  # 1. External hooks (pre-commit's built-in collection)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0 # Specify the latest stable version
+    hooks:
+      - id: trailing-whitespace # Removes trailing whitespace
+      - id: end-of-file-fixer # Ensures files end with a single newline
+      - id: check-yaml # Validates YAML syntax
+      - id: check-json # Validates JSON syntax
+      - id: check-added-large-files # Prevents large files from being added
+
+# TODO: consider uncommenting the following hooks (added per LLM suggestion)
+# & seeing why there's a diff between what they recommend vs what VScode does
+# automatically.
+# 2. Black for code formatting
+# - repo: https://github.com/psf/black
+#   rev: 23.1.0 # Specify the latest stable version
+#   hooks:
+#     - id: black
+
+# # 3. isort for import sorting
+# - repo: https://github.com/pre-commit/mirrors-isort
+#   rev: v5.10.1 # Specify the latest stable version
+#   hooks:
+#     - id: isort
+
+# # 4. flake8 for linting
+# - repo: https://github.com/pycqa/flake8
+#   rev: 6.0.0 # Specify the latest stable version
+#   hooks:
+#     - id: flake8

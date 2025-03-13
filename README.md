@@ -32,3 +32,4 @@ Misc tasks that are personalized to my own use case. Not recommended for general
 
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava.
+- Finish setting up pre-commit

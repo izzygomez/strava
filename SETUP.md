@@ -10,6 +10,20 @@ Install the required dependencies:
 pip install -r requirements.txt
 ```
 
+## Pre-commit
+
+This project uses [pre-commit](https://pre-commit.com/) to run code formatting & linting checks before each commit. To install the pre-commit hooks, run:
+
+```bash
+pre-commit install
+```
+
+To run checks manually on all files:
+
+```bash
+pre-commit run --all-files --verbose
+```
+
 ## Strava Integration
 
 Relevant links: [Strava Developers landing page](https://developers.strava.com/), [API reference](https://developers.strava.com/docs/reference/).
