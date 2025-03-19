@@ -15,7 +15,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/calendar.readonly",
     "https://www.googleapis.com/auth/calendar.events",
 ]
-TOKEN_FILE_NAME = "strava-to-gcal-token.json"
+TOKEN_FILE_NAME = "credentials/strava-to-gcal-token.json"
 
 
 def create_google_calendar_service() -> object:
