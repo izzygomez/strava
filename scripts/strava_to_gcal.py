@@ -76,6 +76,8 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> None:
     if not service:
         print("Failed to get Google Calendar service.")
         raise
+
+    print("\nRunning Strava to Google Calendar script...")
     strava_access_token = strava_api.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )

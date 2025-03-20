@@ -114,7 +114,7 @@ def get_strava_activities(
 
     if log:
         print(
-            f"Fetching Strava activities in range [{start_date.strftime("%m/%d/%Y")}, "
+            f"\nFetching Strava activities in range [{start_date.strftime("%m/%d/%Y")}, "
             f"{end_date.strftime("%m/%d/%Y")})..."
         )
 

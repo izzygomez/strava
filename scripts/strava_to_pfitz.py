@@ -77,13 +77,15 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
 
     if requests:
         spreadsheet.batch_update({"requests": requests})
-        print(f"Updated {len(requests)} cells in the 'Strava Links' column.")
+        print(f"\nUpdated {len(requests)} cells in the 'Strava Links' column.")
 
 
 if __name__ == "__main__":
     access_token = strava_api.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
+
+    print("\nRunning Strava to Pfitz script...")
 
     # These are currently set to beginning & end dates for the Vancouver
     # Marathon Pfitz training block.
