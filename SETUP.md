@@ -75,7 +75,7 @@ I decided to create separate Google Cloud Platform projects for the Google Sheet
 
 1. Enable the Google Calendar API for this new project.
 
-1. Following the [Google Calendar API Python Quickstart](https://developers.google.com/calendar/api/quickstart/python#authorize_credentials_for_a_desktop_application) instructions:
+1. Following the [Google Calendar API Python Quickstart](https://developers.google.com/calendar/api/quickstart/python) instructions:
 
    1. Under Google Auth platform > Clients, create a new OAuth 2.0 Client ID. Set the application type to "Desktop app".
 
