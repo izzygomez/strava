@@ -87,10 +87,10 @@ if __name__ == "__main__":
 
     print("\nRunning Strava to Pfitz script...")
 
-    # These are currently set to beginning & end dates for the Vancouver
-    # Marathon Pfitz training block.
-    start_date = datetime(2024, 12, 30)
-    end_date = datetime(2025, 6, 9)
+    # These are currently set to beginning & end dates for the NYC '25 Marathon
+    # Pfitz training block.
+    start_date = datetime(2025, 6, 30)
+    end_date = datetime(2025, 12, 7)
     all_activities = strava_api.get_strava_activities(
         access_token, start_date, end_date, log=True
     )
