@@ -85,7 +85,7 @@ if __name__ == "__main__":
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
 
-    print("\nRunning Strava to Pfitz script...")
+    print("\nRunning Strava to Pfitz GSheet script...")
 
     # These are currently set to beginning & end dates for the NYC '25 Marathon
     # Pfitz training block.

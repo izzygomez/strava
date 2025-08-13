@@ -12,9 +12,9 @@ See [SETUP.md](SETUP.md) for setup instructions.
 
 Assuming all setup steps have been completed, the following scripts are available for use:
 
-#### strava_to_pfitz.py
+#### strava_to_pfitz_gsheet.py
 
-`python -m scripts.strava_to_pfitz`
+`python -m scripts.strava_to_pfitz_gsheet`
 
 Script to convert Strava activities into clickable links in Google Sheets tracking a Pfitzinger training plan. For an example of what this script does, see the rightmost column of [izzy.gg/r/vancouver2025](https://izzy.gg/r/vancouver2025).
 

@@ -55,9 +55,9 @@ Relevant links: [Strava Developers landing page](https://developers.strava.com/)
 
 I decided to create separate Google Cloud Platform projects for the Google Sheets & Google Calendar integrations. Mostly to keep privileges separate, but also just a style choice.
 
-### Integrations for strava_to_pfitz.py
+### Integrations for strava_to_pfitz_gsheet.py
 
-1. Create a new Google Cloud Platform project to manage connections used by `strava_to_pfitz.py`. I chose to name mine "Strava to Pfitz".
+1. Create a new Google Cloud Platform project to manage connections used by `strava_to_pfitz_gsheet.py`. I chose to name mine "Strava to Pfitz GSheet".
 
 1. Enable the Google Sheets & the Google Drive APIs for this new project.
 
@@ -65,7 +65,7 @@ I decided to create separate Google Cloud Platform projects for the Google Sheet
 
 1. Create & download a new JSON key for this new service account. Save in this repo. Set the `GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH` environment variable to the path of the JSON file.
 
-1. Locate Google Sheet that you want to modify with the `strava_to_pfitz.py` script. Set the `GOOGLE_SHEETS_SHEET_NAME` environment variable to the name of the sheet.
+1. Locate Google Sheet that you want to modify with the `strava_to_pfitz_gsheet.py` script. Set the `GOOGLE_SHEETS_SHEET_NAME` environment variable to the name of the sheet.
 
 1. Add service account email address to sheet with the `Editor` role.
 
