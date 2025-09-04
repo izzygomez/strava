@@ -50,8 +50,11 @@ def create_google_calendar_service() -> object:
                 # Refresh token is invalid, re-run the OAuth flow.
                 creds = _run_oauth_flow()
         else:
-            creds = _run_oauth_flow
+            creds = _run_oauth_flow()
         # Save the credentials for the next run
+        os.makedirs(
+            os.path.dirname(TOKEN_FILE_NAME), exist_ok=True
+        )  # this ensures the directory exists
         with open(TOKEN_FILE_NAME, "w") as token:
             token.write(creds.to_json())
 

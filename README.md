@@ -12,6 +12,18 @@ See [SETUP.md](SETUP.md) for setup instructions.
 
 Assuming all setup steps have been completed, the following scripts are available for use:
 
+### Convenience Script
+
+For the most common use case of syncing to both Google Sheets & Google Calendar:
+
+```bash
+./strava_sync
+```
+
+This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
+
+### Individual Scripts
+
 #### strava_to_pfitz_gsheet.py
 
 `python -m scripts.strava_to_pfitz_gsheet`
