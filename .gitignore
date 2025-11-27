@@ -6,3 +6,5 @@
 *-export.txt
 # no python compiled files
 __pycache__/
+# macos
+.DS_Store
