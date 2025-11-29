@@ -2,7 +2,8 @@
 
 This document describes the steps required to set up external integrations. Sensitive environment variables are stored in `.env` & credential files are stored in the `credentials/` directory, both of which are ignored by `.gitignore` to avoid leaking publicly.
 
-## Requirements
+<details>
+<summary><h2>Requirements</h2></summary>
 
 Install the required dependencies:
 
@@ -10,7 +11,10 @@ Install the required dependencies:
 pip install -r requirements.txt
 ```
 
-## Pre-commit
+</details>
+
+<details>
+<summary><h2>Pre-commit</h2></summary>
 
 This project uses [pre-commit](https://pre-commit.com/) to run code formatting & linting checks before each commit. To install the pre-commit hooks, run:
 
@@ -24,7 +28,10 @@ To run checks manually on all files:
 pre-commit run --all-files --verbose
 ```
 
-## Strava Integration
+</details>
+
+<details>
+<summary><h2>Strava Integration</h2></summary>
 
 Relevant links: [Strava Developers landing page](https://developers.strava.com/), [API reference](https://developers.strava.com/docs/reference/).
 
@@ -51,7 +58,10 @@ Relevant links: [Strava Developers landing page](https://developers.strava.com/)
 
 1. Set `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, & `STRAVA_REFRESH_TOKEN` appropriately in `.env`.
 
-## Google Integrations
+</details>
+
+<details>
+<summary><h2>Google Integrations</h2></summary>
 
 I decided to create separate Google Cloud Platform projects for the Google Sheets & Google Calendar integrations. Mostly to keep privileges separate, but also just a style choice.
 
@@ -86,3 +96,21 @@ I decided to create separate Google Cloud Platform projects for the Google Sheet
       1. Note: if there are any issues with the Google authentication flow, try visiting the URL in incognito mode.
 
 1. Set the `GOOGLE_CALENDAR_STRAVA_CALENDAR_ID` in `.env` to the ID of the Google Calendar you want to add events to. If set to your gmail address, events will be added to your primary calendar. But it's preferable to create a dedicated calendar & use the `*@group.calendar.google.com` ID. This ID can be found on the calendar settings page in Google Calendar.
+
+</details>
+
+<details>
+<summary><h2>ntfy.sh Integration</h2></summary>
+
+[ntfy.sh](https://ntfy.sh/) is a simple pub/sub notification service that sends phone push notifications. The Strava scripts use it to notify you when they complete successfully or fail with an error.
+
+1. Create a new topic on ntfy.sh. Your topic URL will be `https://ntfy.sh/{YOUR_TOPIC_NAME}`.
+
+1. Set the `NTFY_TOPIC_URL` in `.env` to your full topic URL (e.g., `NTFY_TOPIC_URL=https://ntfy.sh/{YOUR_TOPIC_NAME}`).
+
+1. Subscribe to your topic on your phone:
+   - Install the ntfy app ([iOS](https://apps.apple.com/us/app/ntfy/id1625396347) or [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy))
+   - Subscribe to your topic URL
+   - You should now receive notifications when scripts run
+
+</details>

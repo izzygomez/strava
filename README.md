@@ -10,7 +10,9 @@ See [SETUP.md](SETUP.md) for setup instructions.
 
 ## Usage
 
-Assuming all setup steps have been completed, the following scripts are available for use:
+Assuming all setup steps have been completed, the following scripts are available for use.
+
+**Note:** All scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
 
 ### Convenience Script
 

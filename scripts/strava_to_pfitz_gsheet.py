@@ -1,12 +1,14 @@
+import traceback
 from datetime import datetime
 
 import gspread
 from dateutil import parser
 
-from services import google_sheets_api, strava_api
+from services import google_sheets_api, ntfy_api, strava_api
 from utils.load_env import (
     GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
     GOOGLE_SHEETS_SHEET_NAME,
+    NTFY_TOPIC_URL,
     STRAVA_CLIENT_ID,
     STRAVA_CLIENT_SECRET,
     STRAVA_REFRESH_TOKEN,
@@ -20,7 +22,7 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
     requests = []
 
     # Mostly written with aid of ChatGPT & by adopting solution given here [1] because it was
-    # suprisingly tricky to add multiple hyperlinks to a single cell. I mention the ChatGPT aid
+    # surprisingly tricky to add multiple hyperlinks to a single cell. I mention the ChatGPT aid
     # here because I just wanted an MVP when first writing this, but looking at the code it seems
     # like it's a bit inefficient (e.g. iterating through all activities for each date cell) — can
     # choose to refactor this later if needed.
@@ -79,41 +81,75 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
         spreadsheet.batch_update({"requests": requests})
         print(f"\nUpdated {len(requests)} cells in the 'Strava Links' column.")
 
+    return len(requests)
+
 
 if __name__ == "__main__":
-    access_token = strava_api.get_strava_access_token(
-        STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
-    )
+    try:
+        access_token = strava_api.get_strava_access_token(
+            STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
+        )
 
-    print("\nRunning Strava to Pfitz GSheet script...")
+        print("\nRunning Strava to Pfitz GSheet script...")
 
-    # These are currently set to beginning & end dates for the NYC '25 Marathon
-    # Pfitz training block.
-    start_date = datetime(2025, 6, 30)
-    end_date = datetime(2025, 12, 7)
-    all_activities = strava_api.get_strava_activities(
-        access_token, start_date, end_date, log=True
-    )
+        # These are currently set to beginning & end dates for the NYC '25 Marathon
+        # Pfitz training block.
+        start_date = datetime(2025, 6, 30)
+        end_date = datetime(2025, 12, 7)
+        all_activities = strava_api.get_strava_activities(
+            access_token, start_date, end_date, log=True
+        )
 
-    # Connect to the Google Sheet
-    # Credentials file that was downloaded from Google Developer Console after creating
-    # a new project, enabling the Google Sheets API, & creating a service account.
-    sheet = google_sheets_api.connect_to_google_sheets(
-        GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
-        GOOGLE_SHEETS_SHEET_NAME,
-    )
+        # Connect to the Google Sheet
+        # Credentials file that was downloaded from Google Developer Console after creating
+        # a new project, enabling the Google Sheets API, & creating a service account.
+        sheet = google_sheets_api.connect_to_google_sheets(
+            GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
+            GOOGLE_SHEETS_SHEET_NAME,
+        )
 
-    # Find the 'Strava Links' & 'Date' header cell locations
-    strava_column, strava_row = google_sheets_api.find_cell_index(sheet, "Strava Links")
-    date_column, date_row = google_sheets_api.find_cell_index(sheet, "Date")
-    strava_a1 = gspread.utils.rowcol_to_a1(strava_row, strava_column)
-    date_a1 = gspread.utils.rowcol_to_a1(date_row, date_column)
-    # print(f"'Strava Links' header is at {strava_a1}")  # DEBUG
-    # print(f"'Date' header is at {date_a1}")  # DEBUG
+        # Find the 'Strava Links' & 'Date' header cell locations
+        strava_column, strava_row = google_sheets_api.find_cell_index(
+            sheet, "Strava Links"
+        )
+        date_column, date_row = google_sheets_api.find_cell_index(sheet, "Date")
+        strava_a1 = gspread.utils.rowcol_to_a1(strava_row, strava_column)
+        date_a1 = gspread.utils.rowcol_to_a1(date_row, date_column)
+        # print(f"'Strava Links' header is at {strava_a1}")  # DEBUG
+        # print(f"'Date' header is at {date_a1}")  # DEBUG
 
-    # Ensure the date column and strava column headers are on the same row
-    if date_row != strava_row:
-        raise ValueError("'Date' and 'Strava Links' headers are not on the same row")
+        # Ensure the date column and strava column headers are on the same row
+        if date_row != strava_row:
+            raise ValueError(
+                "'Date' and 'Strava Links' headers are not on the same row"
+            )
 
-    # Update the 'Strava Links' column with Strava activity links
-    update_strava_links(sheet, strava_column, strava_row, date_column, all_activities)
+        # Update the 'Strava Links' column with Strava activity links
+        cells_updated = update_strava_links(
+            sheet, strava_column, strava_row, date_column, all_activities
+        )
+
+        # Send success notification
+        title = "Strava to Pfitz GSheet - Success"
+        message = (
+            f"Successfully updated Pfitz training sheet with Strava activities.\n\n"
+            f"Cells updated: {cells_updated}\n"
+            f"Total activities: {len(all_activities)}"
+        )
+        ntfy_api.send_notification(
+            NTFY_TOPIC_URL,
+            message,
+            title=title,
+            priority="default",
+            tags=["white_check_mark"],
+        )
+    except Exception as e:
+        # Send failure notification
+        title = "Strava to Pfitz GSheet - Failed"
+        error_trace = traceback.format_exc()
+        message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+        ntfy_api.send_notification(
+            NTFY_TOPIC_URL, message, title=title, priority="high", tags=["x", "warning"]
+        )
+        # Re-raise the exception so the script still exits with an error code
+        raise

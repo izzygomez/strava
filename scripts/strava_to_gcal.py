@@ -1,12 +1,13 @@
-import sys
+import traceback
 from datetime import datetime, timedelta
 
 import pytz
 
-from services import google_calendar_api, strava_api
+from services import google_calendar_api, ntfy_api, strava_api
 from utils import time_utils
 from utils.load_env import (
     GOOGLE_CALENDAR_STRAVA_CALENDAR_ID,
+    NTFY_TOPIC_URL,
     STRAVA_CLIENT_ID,
     STRAVA_CLIENT_SECRET,
     STRAVA_REFRESH_TOKEN,
@@ -71,7 +72,7 @@ def _compare_events(local_event, gcal_event) -> list:
     return diff
 
 
-def strava_to_gcal(start_date: datetime, end_date: datetime) -> None:
+def strava_to_gcal(start_date: datetime, end_date: datetime) -> dict:
     service = google_calendar_api.create_google_calendar_service()
     if not service:
         print("Failed to get Google Calendar service.")
@@ -162,6 +163,13 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> None:
         f"out of {len(all_activities)} activities."
     )
 
+    return {
+        "created": created_events,
+        "updated": updated_events,
+        "skipped": non_modified_events,
+        "total": len(all_activities),
+    }
+
 
 if __name__ == "__main__":
     # Uncomment this line if I want to run this script on all activities.
@@ -171,4 +179,31 @@ if __name__ == "__main__":
     # End date is non-inclusive, so we'll set it to tomorrow.
     end_date = time_utils.n_days_from_today(1)
 
-    strava_to_gcal(start_date, end_date)
+    try:
+        stats = strava_to_gcal(start_date, end_date)
+        # Send success notification
+        title = "Strava to GCal - Success"
+        message = (
+            f"Successfully synced Strava activities to Google Calendar.\n\n"
+            f"Created: {stats['created']}\n"
+            f"Updated: {stats['updated']}\n"
+            f"Skipped: {stats['skipped']}\n"
+            f"Total: {stats['total']}"
+        )
+        ntfy_api.send_notification(
+            NTFY_TOPIC_URL,
+            message,
+            title=title,
+            priority="default",
+            tags=["white_check_mark"],
+        )
+    except Exception as e:
+        # Send failure notification
+        title = "Strava to GCal - Failed"
+        error_trace = traceback.format_exc()
+        message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+        ntfy_api.send_notification(
+            NTFY_TOPIC_URL, message, title=title, priority="high", tags=["x", "warning"]
+        )
+        # Re-raise the exception so the script still exits with an error code
+        raise
