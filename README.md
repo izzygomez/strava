@@ -30,7 +30,7 @@ This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
 
 `python -m scripts.strava_to_pfitz_gsheet`
 
-Script to convert Strava activities into clickable links in Google Sheets tracking a Pfitzinger training plan. For an example of what this script does, see the rightmost column of [izzy.gg/r/vancouver2025](https://izzy.gg/r/vancouver2025).
+Script to convert Strava activities into clickable links in Google Sheets tracking a Pfitzinger training plan. For an example of what this script does, see the rightmost column of [izzy.gg/vancouver25](https://izzy.gg/vancouver25).
 
 #### strava_to_gcal.py
 
