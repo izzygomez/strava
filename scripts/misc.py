@@ -43,9 +43,9 @@ def log_activities(activities, file_name=""):
 
             for activity in filtered_activities:
                 activity_str = (
-                    f"{activity["name"]} on "
-                    f"{datetime.fromisoformat(activity["start_date_local"]).strftime("%m/%d/%Y")}: "
-                    f"{strava_api.get_activity_url(activity["id"])}"
+                    f"{activity['name']} on "
+                    f"{datetime.fromisoformat(activity['start_date_local']).strftime('%m/%d/%Y')}: "
+                    f"{strava_api.get_activity_url(activity['id'])}"
                 )
                 if file:
                     file.write("\n" + activity_str)

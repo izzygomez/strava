@@ -195,7 +195,7 @@ def list_all_calendars(service) -> None:
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
         for calendar_list_entry in calendar_list["items"]:
-            print(f"{calendar_list_entry["summary"]} (id: {calendar_list_entry["id"]})")
+            print(f"{calendar_list_entry['summary']} (id: {calendar_list_entry['id']})")
         page_token = calendar_list.get("nextPageToken")
         if not page_token:
             break

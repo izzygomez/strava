@@ -22,7 +22,7 @@ def _build_event(activity, start_time, end_time) -> dict:
     Build a Google Calendar event object from a Strava activity object.
     """
     emoji = strava_api.get_emoji_for_sport_type(activity["sport_type"])
-    event_title = f"{emoji} • {activity["name"]}"
+    event_title = f"{emoji} • {activity['name']}"
     event_description = strava_api.get_activity_url(activity["id"])
     return {
         "summary": event_title,
@@ -93,7 +93,7 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> dict:
     for i, activity in enumerate(all_activities):
         print_count = 50
         if (i + 1) % print_count == 0:
-            print(f"Processing activity {i+1}/{len(all_activities)}...")
+            print(f"Processing activity {i + 1}/{len(all_activities)}...")
 
         # Normalize start & end times to UTC
         start_time = datetime.fromisoformat(activity["start_date"])
@@ -119,8 +119,8 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> dict:
         # No events found, create new event.
         if len(matching_events) == 0:
             print(
-                f"\nCreating Google Calendar event for activity '{activity["name"]}' "
-                f"on {datetime.fromisoformat(start_time).strftime("%m/%d/%Y")}"
+                f"\nCreating Google Calendar event for activity '{activity['name']}' "
+                f"on {datetime.fromisoformat(start_time).strftime('%m/%d/%Y')}"
             )
             google_calendar_api.create_event(
                 service, GOOGLE_CALENDAR_STRAVA_CALENDAR_ID, new_event
@@ -135,8 +135,8 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> dict:
                     [f"\n'{new_event[d]}' != '{existing_event[d]}'" for d in diff]
                 )
                 print(
-                    f"\nWill update Google Calendar event for activity '{activity["name"]}' "
-                    f"on {datetime.fromisoformat(start_time).strftime("%m/%d/%Y")} "
+                    f"\nWill update Google Calendar event for activity '{activity['name']}' "
+                    f"on {datetime.fromisoformat(start_time).strftime('%m/%d/%Y')} "
                     f"because of following field diffs (format: 'new' != 'existing'): {diff_str}"
                 )
                 google_calendar_api.update_event(
@@ -153,7 +153,7 @@ def strava_to_gcal(start_date: datetime, end_date: datetime) -> dict:
             print(
                 "\nERROR: Multiple Google Calendar events found for single Strava "
                 f"activity titled '{activity['name']}' "
-                f"on {datetime.fromisoformat(start_time).strftime("%m/%d/%Y")}."
+                f"on {datetime.fromisoformat(start_time).strftime('%m/%d/%Y')}."
             )
 
     print(

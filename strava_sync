@@ -3,7 +3,7 @@
 # Strava Sync - Convenience script to sync Strava data to Google Sheets and Google Calendar
 # This script runs both strava_to_pfitz_gsheet and strava_to_gcal in sequence
 
-set -e  # Exit on any error
+set -e # Exit on any error
 
 echo "🏃 Starting Strava sync..."
 echo
