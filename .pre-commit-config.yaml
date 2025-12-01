@@ -8,24 +8,26 @@ repos:
       - id: check-yaml # Validates YAML syntax
       - id: check-json # Validates JSON syntax
       - id: check-added-large-files # Prevents large files from being added
+      - id: check-executables-have-shebangs # Ensure executables have shebangs
+      - id: check-shebang-scripts-are-executable # Ensure shebang scripts are executable
 
-# TODO: consider uncommenting the following hooks (added per LLM suggestion)
-# & seeing why there's a diff between what they recommend vs what VScode does
-# automatically.
-# 2. Black for code formatting
-# - repo: https://github.com/psf/black
-#   rev: 23.1.0 # Specify the latest stable version
-#   hooks:
-#     - id: black
+  # 2. Ruff for linting and formatting (replaces Black, isort, and flake8)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.7 # Specify the latest stable version
+    hooks:
+      - id: ruff # Linter (replaces flake8)
+        args: [--fix] # Auto-fix issues when possible
+      - id: ruff-format # Formatter (replaces Black + isort)
 
-# # 3. isort for import sorting
-# - repo: https://github.com/pre-commit/mirrors-isort
-#   rev: v5.10.1 # Specify the latest stable version
-#   hooks:
-#     - id: isort
+  # 3. Shell script formatting
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.12.0-2 # Specify the latest stable version
+    hooks:
+      - id: shfmt # Format shell scripts
+        args: [-w, -s, -i, "4"] # Write changes, simplify code, 4-space indent
 
-# # 4. flake8 for linting
-# - repo: https://github.com/pycqa/flake8
-#   rev: 6.0.0 # Specify the latest stable version
-#   hooks:
-#     - id: flake8
+  # 4. Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1 # Specify the latest stable version
+    hooks:
+      - id: shellcheck # Lint shell scripts for common issues
