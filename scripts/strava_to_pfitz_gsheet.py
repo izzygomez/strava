@@ -95,7 +95,9 @@ if __name__ == "__main__":
         # These are currently set to beginning & end dates for the NYC '25 Marathon
         # Pfitz training block.
         start_date = datetime(2025, 6, 30)
-        end_date = datetime(2025, 12, 7)
+        end_date = datetime(2026, 1, 1)
+        # remember that end_date is non-inclusive, so make sure end_date is
+        # one more than plan's actual end date
         all_activities = strava_api.get_strava_activities(
             access_token, start_date, end_date, log=True
         )
