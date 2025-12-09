@@ -18,6 +18,8 @@ repos:
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
+      - id: check-ast
+      - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-json
@@ -25,9 +27,11 @@ repos:
       - id: check-shebang-scripts-are-executable
       - id: check-symlinks
       - id: check-yaml
+      - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: no-commit-to-branch
+      - id: requirements-txt-fixer
       - id: trailing-whitespace
 
   # Ruff for linting and formatting (replaces Black, isort, and flake8)
