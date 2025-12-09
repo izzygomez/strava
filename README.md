@@ -49,4 +49,5 @@ This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format &
 ## TODOs
 
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
-- Figure out how to automatically trigger scripts when new activities are uploaded to Strava.
+- Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
+- In Strava → GSheets script, only update a cell if it's content has changed.
