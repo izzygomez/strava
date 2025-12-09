@@ -44,25 +44,7 @@ Misc tasks that are personalized to my own use case. Not recommended for general
 
 ## Pre-commit
 
-This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format & lint files before they are committed. The hooks include Python formatting/linting via [Ruff](https://github.com/astral-sh/ruff) & shell script formatting via [shfmt](https://github.com/mvdan/sh). See `.pre-commit-config.yaml` for configuration details.
-
-After installing `pre-commit` (e.g., via `pip install pre-commit` or `brew install pre-commit`), install the hooks:
-
-```bash
-pre-commit install
-```
-
-To run checks manually on all files:
-
-```bash
-pre-commit run --all-files --verbose
-```
-
-To skip `pre-commit` checks for a single commit:
-
-```bash
-git commit -n/--no-verify
-```
+This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format & lint files before they are committed, & also as part of the required checks before a PR can be merged via [pre-commit.ci](https://pre-commit.ci/). See `.pre-commit-config.yaml` for configuration details.
 
 ## TODOs
 
