@@ -20,7 +20,7 @@ def erie_marathon_check():
     start_date = datetime(2024, 9, 8)
     end_date = datetime(2024, 9, 9)
 
-    all_activities = strava_api.get_strava_activities(
+    all_activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN, start_date, end_date, log=True
     )
 
@@ -46,7 +46,7 @@ def longest_workout_breaks(
 
     Prints the longest break &, if specified, the next 'additional_breaks' longest breaks.
     """
-    all_activities = strava_api.get_strava_activities(
+    all_activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN, start_date, end_date
     )
 

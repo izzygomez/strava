@@ -98,7 +98,7 @@ if __name__ == "__main__":
         end_date = datetime(2026, 1, 1)
         # remember that end_date is non-inclusive, so make sure end_date is
         # one more than plan's actual end date
-        all_activities = strava_api.get_strava_activities(
+        all_activities = strava_api.get_sorted_strava_activities(
             access_token, start_date, end_date, log=True
         )
 

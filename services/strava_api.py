@@ -88,7 +88,7 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
         raise
 
 
-def get_strava_activities(
+def get_sorted_strava_activities(
     access_token,
     start_date,
     end_date,

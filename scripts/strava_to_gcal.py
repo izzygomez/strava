@@ -85,7 +85,7 @@ def strava_to_gcal(
     strava_access_token = strava_api.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
-    all_activities = strava_api.get_strava_activities(
+    all_activities = strava_api.get_sorted_strava_activities(
         strava_access_token, start_date, end_date, log=True
     )
 
