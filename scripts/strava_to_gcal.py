@@ -213,26 +213,30 @@ if __name__ == "__main__":
 
     try:
         stats = strava_to_gcal(start_date, end_date, dry_run=DRY_RUN)
-        # Send success notification
-        if not DRY_RUN:
-            title = "Strava to GCal - Success"
-            message = (
-                f"Successfully synced Strava activities to Google Calendar since "
-                f"{start_date.strftime('%m/%d/%Y')}.\n\n"
-                f"Events created: {stats['created']}\n"
-                f"Events updated: {stats['updated']}\n"
-                f"Events skipped: {stats['skipped']}\n"
-                f"Total: {stats['total']}"
-            )
-            ntfy_api.send_notification(
-                NTFY_TOPIC_URL,
-                message,
-                title=title,
-                priority="default",
-                tags=["white_check_mark"],
-            )
-        else:
+        # Send success notification only if changes were made
+        if DRY_RUN:
             print("\nSkipping ntfy.sh notification (dry run mode)")
+            exit(0)
+        if not (stats["created"] > 0 or stats["updated"] > 0):
+            print("\nSkipping ntfy.sh notification, no changes were made")
+            exit(0)
+
+        title = "Strava to GCal - Success"
+        message = (
+            f"Successfully synced Strava activities to Google Calendar since "
+            f"{start_date.strftime('%m/%d/%Y')}.\n\n"
+            f"Events created: {stats['created']}\n"
+            f"Events updated: {stats['updated']}\n"
+            f"Events skipped: {stats['skipped']}\n"
+            f"Total: {stats['total']}"
+        )
+        ntfy_api.send_notification(
+            NTFY_TOPIC_URL,
+            message,
+            title=title,
+            priority="default",
+            tags=["white_check_mark"],
+        )
     except Exception as e:
         # Send failure notification
         if not DRY_RUN:
