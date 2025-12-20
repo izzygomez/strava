@@ -71,7 +71,7 @@ def log_2025_activities_to_console():
     start_date = datetime(2025, 1, 1)
     end_date = time_utils.n_days_from_today(1)
 
-    activities = strava_api.get_strava_activities(
+    activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN,
         start_date,
         end_date,
@@ -85,7 +85,7 @@ def write_all_activities_to_file():
     start_date = time_utils.izzys_strava_start_date()
     end_date = time_utils.n_days_from_today(1)
 
-    activities = strava_api.get_strava_activities(
+    activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN,
         start_date,
         end_date,
@@ -101,7 +101,7 @@ def write_all_workout_activities_to_file():
     end_date = time_utils.n_days_from_today(1)
 
     sport_type_filters = ["Workout"]
-    activities = strava_api.get_strava_activities(
+    activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN,
         start_date,
         end_date,
@@ -123,7 +123,7 @@ def fix_soccer_activities():
     end_date = time_utils.n_days_from_today(1)
 
     sport_type_filters = ["Workout"]
-    activities = strava_api.get_strava_activities(
+    activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN,
         start_date,
         end_date,
