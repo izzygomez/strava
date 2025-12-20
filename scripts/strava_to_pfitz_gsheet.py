@@ -1,6 +1,7 @@
 import traceback
 from datetime import datetime
 
+from collections import defaultdict
 import gspread
 from dateutil import parser
 
@@ -16,17 +17,32 @@ from utils.load_env import (
 
 
 def update_strava_links(sheet, strava_column, strava_row, date_column, activities):
-    """Update cells under 'Strava Links' with multiple Strava activity links, using a single batch_update call."""
+    """
+    Update cells under 'Strava Links' with multiple Strava activity links, using
+    a single batch_update call.
+    """
     date_cells = sheet.col_values(date_column)
+    strava_cells = sheet.col_values(strava_column)
     spreadsheet = sheet.spreadsheet
     requests = []
+    cells_skipped = 0
 
-    # Mostly written with aid of ChatGPT & by adopting solution given here [1] because it was
-    # surprisingly tricky to add multiple hyperlinks to a single cell. I mention the ChatGPT aid
-    # here because I just wanted an MVP when first writing this, but looking at the code it seems
-    # like it's a bit inefficient (e.g. iterating through all activities for each date cell) — can
-    # choose to refactor this later if needed.
-    # [1] https://stackoverflow.com/a/77312815
+    # Group activities by date for efficiency
+    # format: { date -> [{"text": <cell_text>, "url": <url>}, ...] }
+    activities_by_date = defaultdict(list)
+    for activity in activities:
+        activity_date = datetime.strptime(
+            activity["start_date_local"][:10], "%Y-%m-%d"
+        ).date()
+
+        emoji = strava_api.get_emoji_for_sport_type(activity["sport_type"])
+        cell_text = f"{emoji} • {activity['name']}"
+        url = strava_api.get_activity_url(activity["id"])
+        activities_by_date[activity_date].append({"text": cell_text, "url": url})
+
+    # Create update requests for each cell, which will be batched at the end.
+    # Solution for multiple hyperlinks per cell inspired by this:
+    # https://stackoverflow.com/a/77312815
     for i in range(strava_row, len(date_cells)):
         date_value = date_cells[i]
         if not date_value:
@@ -37,34 +53,47 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
             print(f"Skipping unrecognized date format: {date_value}")
             continue
 
-        obj = []
-        for activity in activities:
-            activity_date = datetime.strptime(
-                activity["start_date_local"][:10], "%Y-%m-%d"
-            ).date()
-            if activity_date == parsed_date:
-                emoji = strava_api.get_emoji_for_sport_type(activity["sport_type"])
-                text = f"{emoji} • {activity['name']}"
-                url = strava_api.get_activity_url(activity["id"])
-                obj.append({"t": text, "u": url})
-        if obj:
-            text = "\n".join([e["t"] for e in obj])
+        # Get activities for this date
+        activities_for_date = activities_by_date.get(parsed_date, [])
+
+        # Only update if there are activities for this date
+        if activities_for_date:
+            cell_text = "\n".join([a["text"] for a in activities_for_date])
+
+            # Check if the cell already has this text value.
+            # NOTE: this is not checking the formatting of the cell, i.e. the
+            # hyperlinks, so we may skip updating a cell if the text is the same
+            # but the hyperlink content or format is different.
+            existing_value = strava_cells[i] if i < len(strava_cells) else ""
+            if existing_value == cell_text:
+                cells_skipped += 1
+                continue
+
+            new_cell_content = [
+                {
+                    "values": [
+                        {
+                            "userEnteredValue": {"stringValue": cell_text},
+                            "textFormatRuns": [
+                                {
+                                    "format": {"link": {"uri": a["url"]}},
+                                    # This is necessary to ensure the hyperlink
+                                    # for each individual activity starts in the
+                                    # right index. Otherwise, the hyperlinks
+                                    # will overlap & all links won't be properly
+                                    # clickable.
+                                    "startIndex": cell_text.find(a["text"]),
+                                }
+                                for a in activities_for_date
+                            ],
+                        }
+                    ]
+                }
+            ]
             requests.append(
                 {
                     "updateCells": {
-                        "rows": [
-                            {
-                                "values": [
-                                    {
-                                        "userEnteredValue": {"stringValue": text},
-                                        "textFormatRuns": [
-                                            {"format": {"link": {"uri": e["u"]}}}
-                                            for e in obj
-                                        ],
-                                    }
-                                ]
-                            }
-                        ],
+                        "rows": new_cell_content,
                         "range": {
                             "sheetId": sheet.id,
                             "startRowIndex": i,
@@ -77,11 +106,21 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
                 }
             )
 
+    # Batch update the cells
     if requests:
         spreadsheet.batch_update({"requests": requests})
-        print(f"\nUpdated {len(requests)} cells in the 'Strava Links' column.")
 
-    return len(requests)
+    print(
+        f"\nUpdated {len(requests)} cells & "
+        f"skipped {cells_skipped} existing cells — "
+        f"out of {len(activities)} activities."
+    )
+
+    return {
+        "updated": len(requests),
+        "skipped": cells_skipped,
+        "total_activities": len(activities),
+    }
 
 
 if __name__ == "__main__":
@@ -98,7 +137,7 @@ if __name__ == "__main__":
         end_date = datetime(2026, 1, 1)
         # remember that end_date is non-inclusive, so make sure end_date is
         # one more than plan's actual end date
-        all_activities = strava_api.get_sorted_strava_activities(
+        sorted_activities = strava_api.get_sorted_strava_activities(
             access_token, start_date, end_date, log=True
         )
 
@@ -127,16 +166,17 @@ if __name__ == "__main__":
             )
 
         # Update the 'Strava Links' column with Strava activity links
-        cells_updated = update_strava_links(
-            sheet, strava_column, strava_row, date_column, all_activities
+        stats = update_strava_links(
+            sheet, strava_column, strava_row, date_column, sorted_activities
         )
 
         # Send success notification
         title = "Strava to Pfitz GSheet - Success"
         message = (
             f"Successfully updated Pfitz training sheet with Strava activities.\n\n"
-            f"Cells updated: {cells_updated}\n"
-            f"Total activities: {len(all_activities)}"
+            f"Cells updated: {stats['updated']}\n"
+            f"Cells skipped: {stats['skipped']}\n"
+            f"Activities processed: {stats['total_activities']}"
         )
         ntfy_api.send_notification(
             NTFY_TOPIC_URL,
