@@ -170,21 +170,24 @@ if __name__ == "__main__":
             sheet, strava_column, strava_row, date_column, sorted_activities
         )
 
-        # Send success notification
-        title = "Strava to Pfitz GSheet - Success"
-        message = (
-            f"Successfully updated Pfitz training sheet with Strava activities.\n\n"
-            f"Cells updated: {stats['updated']}\n"
-            f"Cells skipped: {stats['skipped']}\n"
-            f"Activities processed: {stats['total_activities']}"
-        )
-        ntfy_api.send_notification(
-            NTFY_TOPIC_URL,
-            message,
-            title=title,
-            priority="default",
-            tags=["white_check_mark"],
-        )
+        # Send success notification only if changes were made
+        if stats["updated"] > 0:
+            title = "Strava to Pfitz GSheet - Success"
+            message = (
+                f"Successfully updated Pfitz training sheet with Strava activities.\n\n"
+                f"Cells updated: {stats['updated']}\n"
+                f"Cells skipped: {stats['skipped']}\n"
+                f"Activities processed: {stats['total_activities']}"
+            )
+            ntfy_api.send_notification(
+                NTFY_TOPIC_URL,
+                message,
+                title=title,
+                priority="default",
+                tags=["white_check_mark"],
+            )
+        else:
+            print("\nSkipping ntfy.sh notification, no changes were made")
     except Exception as e:
         # Send failure notification
         title = "Strava to Pfitz GSheet - Failed"
