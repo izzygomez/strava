@@ -169,6 +169,7 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
     return response.json()["access_token"]
 
 
+# TODO: consider standardizing end_date to be inclusive.
 def get_sorted_strava_activities(
     access_token,
     start_date,
