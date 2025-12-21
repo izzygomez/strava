@@ -175,7 +175,9 @@ if __name__ == "__main__":
         if stats["updated"] > 0:
             title = "Strava to Pfitz GSheet - Success"
             message = (
-                f"Successfully updated Pfitz training sheet with Strava activities.\n\n"
+                f"Successfully synced Strava activities to Pfitz training sheet.\n\n"
+                f"Dates: [{start_date.strftime('%m/%d/%Y')}, "
+                f"{end_date.strftime('%m/%d/%Y')})\n"
                 f"Cells updated: {stats['updated']}\n"
                 f"Cells skipped: {stats['skipped']}\n"
                 f"Activities processed: {stats['total_activities']}"

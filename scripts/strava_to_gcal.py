@@ -232,12 +232,13 @@ if __name__ == "__main__":
 
         title = "Strava to GCal - Success"
         message = (
-            f"Successfully synced Strava activities to Google Calendar since "
-            f"{start_date.strftime('%m/%d/%Y')}.\n\n"
+            f"Successfully synced Strava activities to Google Calendar.\n\n"
+            f"Dates: [{start_date.strftime('%m/%d/%Y')}, "
+            f"{end_date.strftime('%m/%d/%Y')})\n"
             f"Events created: {stats['created']}\n"
             f"Events updated: {stats['updated']}\n"
             f"Events skipped: {stats['skipped']}\n"
-            f"Total: {stats['total']}"
+            f"Activities processed: {stats['total']}"
         )
         print()
         ntfy_api.send_notification(
