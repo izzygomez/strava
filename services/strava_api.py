@@ -92,6 +92,7 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
     return response.json()["access_token"]
 
 
+# TODO: add caching for ~1 hour, can be skipped by passing in a flag
 def get_sorted_strava_activities(
     access_token, start_date, end_date, sport_type_filters=set(), page_size=200
 ) -> list:
