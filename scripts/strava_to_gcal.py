@@ -77,7 +77,7 @@ def strava_to_gcal(
 ) -> dict:
     service = google_calendar_api.create_google_calendar_service()
     if not service:
-        print("\nFailed to get Google Calendar service.")
+        print("Failed to get Google Calendar service.")
         raise
 
     mode = "[DRY RUN] " if dry_run else ""
@@ -85,18 +85,21 @@ def strava_to_gcal(
     strava_access_token = strava_api.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
+    print()
     all_activities = strava_api.get_sorted_strava_activities(
-        strava_access_token, start_date, end_date, log=True
+        strava_access_token, start_date, end_date
     )
 
-    print(f"\n{mode}Creating/Updating Google Calendar events for Strava activities...")
+    print()
+    print(f"{mode}Creating/Updating Google Calendar events for Strava activities...")
     created_events = 0
     updated_events = 0
     non_modified_events = 0
     for i, activity in enumerate(all_activities):
         print_count = 50
         if (i + 1) % print_count == 0:
-            print(f"\nProcessing activity {i + 1}/{len(all_activities)}...")
+            print()
+            print(f"Processing activity {i + 1}/{len(all_activities)}...")
 
         # Normalize start & end times to UTC for Google Calendar API
         start_time = datetime.fromisoformat(activity["start_date"])
@@ -144,8 +147,9 @@ def strava_to_gcal(
 
         # No events found, create new event.
         if len(matching_events) == 0:
+            print()
             print(
-                f"\nCreating Google Calendar event for activity '{activity['name']}' "
+                f"Creating Google Calendar event for activity '{activity['name']}' "
                 f"on {local_time_str}"
             )
             if not dry_run:
@@ -161,8 +165,9 @@ def strava_to_gcal(
                 diff_str = "".join(
                     [f"\n'{new_event[d]}' != '{existing_event[d]}'" for d in diff]
                 )
+                print()
                 print(
-                    f"\nWill update Google Calendar event for activity '{activity['name']}' "
+                    f"Will update Google Calendar event for activity '{activity['name']}' "
                     f"on {local_time_str} "
                     f"because of following field diffs (format: 'new' != 'existing'): {diff_str}"
                 )
@@ -178,14 +183,16 @@ def strava_to_gcal(
                 non_modified_events += 1
         # Multiple events found, print error & skip.
         else:
+            print()
             print(
-                "\nERROR: Multiple Google Calendar events found for single Strava "
+                "ERROR: Multiple Google Calendar events found for single Strava "
                 f"activity titled '{activity['name']}' "
                 f"on {local_time_str}."
             )
 
+    print()
     print(
-        f"\n{mode}Created {created_events} new events, "
+        f"{mode}Created {created_events} new events, "
         f"updated {updated_events} existing events, "
         f"& skipped {non_modified_events} existing events — "
         f"out of {len(all_activities)} activities."
@@ -215,10 +222,12 @@ if __name__ == "__main__":
         stats = strava_to_gcal(start_date, end_date, dry_run=DRY_RUN)
         # Send success notification only if changes were made
         if DRY_RUN:
-            print("\nSkipping ntfy.sh notification (dry run mode)")
+            print()
+            print("Skipping ntfy.sh notification (dry run mode)")
             exit(0)
         if not (stats["created"] > 0 or stats["updated"] > 0):
-            print("\nSkipping ntfy.sh notification, no changes were made")
+            print()
+            print("Skipping ntfy.sh notification, no changes were made")
             exit(0)
 
         title = "Strava to GCal - Success"
@@ -230,6 +239,7 @@ if __name__ == "__main__":
             f"Events skipped: {stats['skipped']}\n"
             f"Total: {stats['total']}"
         )
+        print()
         ntfy_api.send_notification(
             NTFY_TOPIC_URL,
             message,
@@ -243,6 +253,7 @@ if __name__ == "__main__":
             title = "Strava to GCal - Failed"
             error_trace = traceback.format_exc()
             message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+            print()
             ntfy_api.send_notification(
                 NTFY_TOPIC_URL,
                 message,
@@ -251,6 +262,7 @@ if __name__ == "__main__":
                 tags=["x", "warning"],
             )
         else:
-            print("\nSkipping ntfy.sh failure notification (dry run mode)")
+            print()
+            print("Skipping ntfy.sh failure notification (dry run mode)")
         # Re-raise the exception so the script still exits with an error code
         raise

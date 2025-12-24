@@ -12,7 +12,7 @@ See [SETUP.md](SETUP.md) for setup instructions.
 
 Assuming all setup steps have been completed, the following scripts are available for use.
 
-**Note:** All scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
+**Note:** Some scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
 
 ### Convenience Script
 
@@ -39,6 +39,8 @@ Script to convert Strava activities into clickable links in Google Sheets tracki
 Script to create Google Calendar events for Strava activities on specified calendar.
 
 #### Everything else in scripts/
+
+`python -m scripts.{script_name}`
 
 Misc tasks that are personalized to my own use case. Not recommended for general use.
 

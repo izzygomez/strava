@@ -111,7 +111,7 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
         spreadsheet.batch_update({"requests": requests})
 
     print(
-        f"\nUpdated {len(requests)} cells & "
+        f"Updated {len(requests)} cells & "
         f"skipped {cells_skipped} existing cells — "
         f"out of {len(activities)} activities."
     )
@@ -136,8 +136,9 @@ if __name__ == "__main__":
         end_date = datetime(2026, 1, 1)
         # remember that end_date is non-inclusive, so make sure end_date is
         # one more than plan's actual end date
+        print()
         sorted_activities = strava_api.get_sorted_strava_activities(
-            access_token, start_date, end_date, log=True
+            access_token, start_date, end_date
         )
 
         # Connect to the Google Sheet
@@ -165,6 +166,7 @@ if __name__ == "__main__":
             )
 
         # Update the 'Strava Links' column with Strava activity links
+        print()
         stats = update_strava_links(
             sheet, strava_column, strava_row, date_column, sorted_activities
         )
@@ -178,6 +180,7 @@ if __name__ == "__main__":
                 f"Cells skipped: {stats['skipped']}\n"
                 f"Activities processed: {stats['total_activities']}"
             )
+            print()
             ntfy_api.send_notification(
                 NTFY_TOPIC_URL,
                 message,
@@ -186,13 +189,16 @@ if __name__ == "__main__":
                 tags=["white_check_mark"],
             )
         else:
-            print("\nSkipping ntfy.sh notification, no changes were made")
+            print()
+            print("Skipping ntfy.sh notification, no changes were made")
     except Exception as e:
-        print("\nStrava to Pfitz GSheet script failed. Sending failure notification")
+        print()
+        print("Strava to Pfitz GSheet script failed. Sending failure notification")
         # Send failure notification
         title = "Strava to Pfitz GSheet - Failed"
         error_trace = traceback.format_exc()
         message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+        print()
         ntfy_api.send_notification(
             NTFY_TOPIC_URL, message, title=title, priority="high", tags=["x", "warning"]
         )
