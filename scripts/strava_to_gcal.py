@@ -77,11 +77,11 @@ def strava_to_gcal(
 ) -> dict:
     service = google_calendar_api.create_google_calendar_service()
     if not service:
-        print("Failed to get Google Calendar service.")
+        print("\nFailed to get Google Calendar service.")
         raise
 
     mode = "[DRY RUN] " if dry_run else ""
-    print(f"\n{mode}Running Strava to Google Calendar script...")
+    print(f"📅 {mode}Syncing Strava activities to Google Calendar...")
     strava_access_token = strava_api.get_strava_access_token(
         STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
     )
@@ -96,7 +96,7 @@ def strava_to_gcal(
     for i, activity in enumerate(all_activities):
         print_count = 50
         if (i + 1) % print_count == 0:
-            print(f"Processing activity {i + 1}/{len(all_activities)}...")
+            print(f"\nProcessing activity {i + 1}/{len(all_activities)}...")
 
         # Normalize start & end times to UTC for Google Calendar API
         start_time = datetime.fromisoformat(activity["start_date"])

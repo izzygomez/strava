@@ -129,8 +129,7 @@ if __name__ == "__main__":
             STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
         )
 
-        print("\nRunning Strava to Pfitz GSheet script...")
-
+        print("📊 Syncing Strava activities to Pfitz training plan Google Sheet...")
         # These are currently set to beginning & end dates for the NYC '25 Marathon
         # Pfitz training block.
         start_date = datetime(2025, 6, 30)
@@ -189,6 +188,7 @@ if __name__ == "__main__":
         else:
             print("\nSkipping ntfy.sh notification, no changes were made")
     except Exception as e:
+        print("\nStrava to Pfitz GSheet script failed. Sending failure notification")
         # Send failure notification
         title = "Strava to Pfitz GSheet - Failed"
         error_trace = traceback.format_exc()

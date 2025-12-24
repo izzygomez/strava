@@ -13,7 +13,7 @@ def get_env_var(var_name):
     value = os.getenv(var_name)
     if value is None:
         raise EnvironmentError(f"Missing required environment variable: {var_name}")
-    return value
+    return value.strip()
 
 
 ### Get credentials from environment variables
