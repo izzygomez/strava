@@ -93,12 +93,7 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
 
 
 def get_sorted_strava_activities(
-    access_token,
-    start_date,
-    end_date,
-    sport_type_filters=set(),
-    page_size=200,
-    log=False,
+    access_token, start_date, end_date, sport_type_filters=set(), page_size=200
 ) -> list:
     """
     Get all Strava activities in [start_date, end_date) using the Strava API.
@@ -116,11 +111,10 @@ def get_sorted_strava_activities(
     url = "https://www.strava.com/api/v3/athlete/activities"
     headers = _create_headers(access_token)
 
-    if log:
-        print(
-            f"\nFetching Strava activities in range [{start_date.strftime('%m/%d/%Y')}, "
-            f"{end_date.strftime('%m/%d/%Y')})..."
-        )
+    print(
+        f"Fetching Strava activities in range [{start_date.strftime('%m/%d/%Y')}, "
+        f"{end_date.strftime('%m/%d/%Y')})..."
+    )
 
     all_activities = []
     page = 1
@@ -137,7 +131,7 @@ def get_sorted_strava_activities(
             response.raise_for_status()  # Raise an error for bad responses
             activities = response.json()
         except requests.exceptions.RequestException as e:
-            print(f"\nFailed to fetch activities from Strava: {e}")
+            print(f"Failed to fetch activities from Strava: {e}")
             raise
 
         if not activities:
@@ -145,15 +139,16 @@ def get_sorted_strava_activities(
 
         all_activities.extend(activities)
         page += 1
-    # print(f"\nnumber of API calls made to get all_activities: {page - 1}")  # DEBUG
+    # print()
+    # print(f"number of API calls made to get all_activities: {page - 1}")  # DEBUG
 
     # After fetching all activities, sort them by the start date. All start
     # date values are in UTC per the API docs.
     all_activities = sorted(
         all_activities, key=lambda x: datetime.fromisoformat(x["start_date"])
     )
-    if log:
-        print(f"\nFetched {len(all_activities)} Strava activities.")
+    print()
+    print(f"Fetched {len(all_activities)} Strava activities.")
 
     # Filter activities by sport_type if specified
     if sport_type_filters:
@@ -162,10 +157,10 @@ def get_sorted_strava_activities(
             for activity in all_activities
             if activity["sport_type"] in sport_type_filters
         ]
-        if log:
-            print(
-                f"\nFiltered down to {len(filtered_activities)} activities of sport type(s): {sport_type_filters}"
-            )
+        print()
+        print(
+            f"Filtered down to {len(filtered_activities)} activities of sport type(s): {sport_type_filters}"
+        )
         return filtered_activities
     else:
         return all_activities
@@ -181,24 +176,23 @@ def get_strava_activity(access_token, activity_id):
         response.raise_for_status()  # Raise an error for bad responses
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"\nFailed to fetch activity from Strava: {e}")
+        print(f"Failed to fetch activity from Strava: {e}")
         raise
 
 
-def update_strava_activity(access_token, activity_id, data, log=False):
+def update_strava_activity(access_token, activity_id, data):
     """Update an activity using the Strava API."""
     url = f"https://www.strava.com/api/v3/activities/{activity_id}"
     headers = _create_headers(access_token)
 
     try:
-        if log:
-            print(f"\nUpdating activity (id = {activity_id}) with data {data}...")
+        print(f"Updating activity (id = {activity_id}) with data {data}...")
         # note: this is a PUT request
         response = requests.put(url, headers=headers, data=data)
         response.raise_for_status()  # Raise an error for bad responses
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"\nFailed to update activity from Strava: {e}")
+        print(f"Failed to update activity from Strava: {e}")
         raise
 
 

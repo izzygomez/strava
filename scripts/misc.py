@@ -59,11 +59,12 @@ def log_activities(activities, file_name=""):
 
     if file_name:
         file_path = os.path.join(EXPORTS_DIR, file_name)
-        print(f"\nLogging activities to {file_path}...")
+        print(f"Logging activities to {file_path}...")
         with open(file_path, "w") as f:
             _log_activities(activities, file=f)
     else:
-        print("\nLogging activities to console...")
+        print("Logging activities to console...")
+        print()
         _log_activities(activities)
 
 
@@ -72,12 +73,10 @@ def log_2025_activities_to_console():
     end_date = time_utils.n_days_from_today(1)
 
     activities = strava_api.get_sorted_strava_activities(
-        ACCESS_TOKEN,
-        start_date,
-        end_date,
-        log=True,
+        ACCESS_TOKEN, start_date, end_date
     )
 
+    print()
     log_activities(activities)
 
 
@@ -86,10 +85,7 @@ def write_all_activities_to_file():
     end_date = time_utils.n_days_from_today(1)
 
     activities = strava_api.get_sorted_strava_activities(
-        ACCESS_TOKEN,
-        start_date,
-        end_date,
-        log=True,
+        ACCESS_TOKEN, start_date, end_date
     )
 
     file_name = "strava-all-activities-export.txt"
@@ -102,11 +98,7 @@ def write_all_workout_activities_to_file():
 
     sport_type_filters = ["Workout"]
     activities = strava_api.get_sorted_strava_activities(
-        ACCESS_TOKEN,
-        start_date,
-        end_date,
-        log=True,
-        sport_type_filters=sport_type_filters,
+        ACCESS_TOKEN, start_date, end_date, sport_type_filters=sport_type_filters
     )
 
     file_name = "strava-workout-activities-export.txt"
@@ -124,11 +116,7 @@ def fix_soccer_activities():
 
     sport_type_filters = ["Workout"]
     activities = strava_api.get_sorted_strava_activities(
-        ACCESS_TOKEN,
-        start_date,
-        end_date,
-        log=True,
-        sport_type_filters=sport_type_filters,
+        ACCESS_TOKEN, start_date, end_date, sport_type_filters=sport_type_filters
     )
     soccer_activities = [
         activity for activity in activities if "⚽" in activity["name"]
@@ -136,11 +124,9 @@ def fix_soccer_activities():
     print(f"Found {len(soccer_activities)} soccer activities.")
 
     for activity in soccer_activities:
+        print()
         strava_api.update_strava_activity(
-            ACCESS_TOKEN,
-            activity_id=activity["id"],
-            data={"sport_type": "Soccer"},
-            log=True,
+            ACCESS_TOKEN, activity_id=activity["id"], data={"sport_type": "Soccer"}
         )
 
 
