@@ -1,3 +1,4 @@
+import argparse
 import traceback
 from datetime import datetime, timedelta
 
@@ -73,7 +74,10 @@ def _compare_events(local_event, gcal_event) -> list:
 
 
 def strava_to_gcal(
-    start_date: datetime, end_date: datetime, dry_run: bool = False
+    start_date: datetime,
+    end_date: datetime,
+    dry_run: bool = False,
+    force_refresh: bool = False,
 ) -> dict:
     service = google_calendar_api.create_google_calendar_service()
     if not service:
@@ -87,7 +91,7 @@ def strava_to_gcal(
     )
     print()
     all_activities = strava_api.get_sorted_strava_activities(
-        strava_access_token, start_date, end_date
+        strava_access_token, start_date, end_date, force_refresh=force_refresh
     )
 
     print()
@@ -187,7 +191,7 @@ def strava_to_gcal(
             print(
                 "ERROR: Multiple Google Calendar events found for single Strava "
                 f"activity titled '{activity['name']}' "
-                f"on {local_time_str}."
+                f"on {local_time_str}"
             )
 
     print()
@@ -195,7 +199,7 @@ def strava_to_gcal(
         f"{mode}Created {created_events} new events, "
         f"updated {updated_events} existing events, "
         f"& skipped {non_modified_events} existing events — "
-        f"out of {len(all_activities)} activities."
+        f"out of {len(all_activities)} activities"
     )
 
     return {
@@ -207,6 +211,17 @@ def strava_to_gcal(
 
 
 if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser(
+        description="Sync Strava activities to Google Calendar"
+    )
+    arg_parser.add_argument(
+        "-f",
+        "--force-refresh",
+        action="store_true",
+        help="Bypass Strava API cache & fetch fresh data",
+    )
+    args = arg_parser.parse_args()
+
     # Toggle this to preview changes without modifying Google Calendar or
     # sending notifications
     DRY_RUN = False
@@ -219,7 +234,12 @@ if __name__ == "__main__":
     end_date = time_utils.n_days_from_today(1)
 
     try:
-        stats = strava_to_gcal(start_date, end_date, dry_run=DRY_RUN)
+        stats = strava_to_gcal(
+            start_date,
+            end_date,
+            dry_run=DRY_RUN,
+            force_refresh=args.force_refresh,
+        )
         # Send success notification only if changes were made
         if DRY_RUN:
             print()

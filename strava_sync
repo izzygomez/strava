@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # Convenience script to run all Strava sync scripts in sequence.
+# Usage: ./strava_sync [--force-refresh | -f]
 
 set -e # Exit on any error
 
 echo "🏃 Running all Strava sync scripts..."
 echo
-python -m scripts.strava_to_pfitz_gsheet
+python -m scripts.strava_to_pfitz_gsheet "$@"
 echo
-python -m scripts.strava_to_gcal
+python -m scripts.strava_to_gcal "$@"
 echo
 echo "✅ All Strava sync scripts completed successfully!"

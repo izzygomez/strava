@@ -1,7 +1,7 @@
+import argparse
 import traceback
-from datetime import datetime
-
 from collections import defaultdict
+from datetime import datetime
 import gspread
 from dateutil import parser
 
@@ -113,7 +113,7 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
     print(
         f"Updated {len(requests)} cells & "
         f"skipped {cells_skipped} existing cells — "
-        f"out of {len(activities)} activities."
+        f"out of {len(activities)} activities"
     )
 
     return {
@@ -124,6 +124,17 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
 
 
 if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser(
+        description="Sync Strava activities to Pfitz training plan Google Sheet"
+    )
+    arg_parser.add_argument(
+        "-f",
+        "--force-refresh",
+        action="store_true",
+        help="Bypass Strava API cache & fetch fresh data",
+    )
+    args = arg_parser.parse_args()
+
     try:
         access_token = strava_api.get_strava_access_token(
             STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, STRAVA_REFRESH_TOKEN
@@ -138,7 +149,7 @@ if __name__ == "__main__":
         # one more than plan's actual end date
         print()
         sorted_activities = strava_api.get_sorted_strava_activities(
-            access_token, start_date, end_date
+            access_token, start_date, end_date, force_refresh=args.force_refresh
         )
 
         # Connect to the Google Sheet
