@@ -8,3 +8,5 @@
 __pycache__/
 # macos
 .DS_Store
+# strava api cache
+.strava_cache/

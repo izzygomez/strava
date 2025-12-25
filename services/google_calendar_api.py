@@ -190,7 +190,7 @@ def list_upcoming_events(service, max_results=10) -> None:
 
 def list_all_calendars(service) -> None:
     """List all calendars the user has access to."""
-    print("\nGetting all calendars")
+    print("Getting all calendars")
     page_token = None
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()

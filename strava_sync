@@ -1,19 +1,14 @@
 #!/bin/bash
 
-# Strava Sync - Convenience script to sync Strava data to Google Sheets and Google Calendar
-# This script runs both strava_to_pfitz_gsheet and strava_to_gcal in sequence
+# Convenience script to run all Strava sync scripts in sequence.
+# Usage: ./strava_sync [--force-refresh | -f]
 
 set -e # Exit on any error
 
-echo "🏃 Starting Strava sync..."
+echo "🏃 Running all Strava sync scripts..."
 echo
-
-echo "📊 Syncing Strava activities to Google Sheets (Pfitz training plan)..."
-python -m scripts.strava_to_pfitz_gsheet
-
+python -m scripts.strava_to_pfitz_gsheet "$@"
 echo
-echo "📅 Syncing Strava activities to Google Calendar..."
-python -m scripts.strava_to_gcal
-
+python -m scripts.strava_to_gcal "$@"
 echo
-echo "✅ Strava sync completed successfully!"
+echo "✅ All Strava sync scripts completed successfully!"

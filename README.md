@@ -12,7 +12,7 @@ See [SETUP.md](SETUP.md) for setup instructions.
 
 Assuming all setup steps have been completed, the following scripts are available for use.
 
-**Note:** All scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
+**Note:** Some scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
 
 ### Convenience Script
 
@@ -23,6 +23,19 @@ For the most common use case of syncing to both Google Sheets & Google Calendar:
 ```
 
 This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
+
+### Caching
+
+Strava API results are cached locally for 1 hour to reduce API calls. The cache is automatically used when the requested date range falls within what's already cached.
+
+To bypass the cache & fetch fresh data from Strava, use the `--force-refresh`/`-f` flag:
+
+```bash
+./strava_sync --force-refresh
+
+python -m scripts.strava_to_gcal -f
+python -m scripts.strava_to_pfitz_gsheet --force-refresh
+```
 
 ### Individual Scripts
 
@@ -40,6 +53,8 @@ Script to create Google Calendar events for Strava activities on specified calen
 
 #### Everything else in scripts/
 
+`python -m scripts.{script_name}`
+
 Misc tasks that are personalized to my own use case. Not recommended for general use.
 
 ## Pre-commit
@@ -50,4 +65,3 @@ This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format &
 
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
-- In Strava → GSheets script, only update a cell if it's content has changed.

@@ -21,7 +21,7 @@ def erie_marathon_check():
     end_date = datetime(2024, 9, 9)
 
     all_activities = strava_api.get_sorted_strava_activities(
-        ACCESS_TOKEN, start_date, end_date, log=True
+        ACCESS_TOKEN, start_date, end_date
     )
 
     # print("length of all_activities: ", len(all_activities))  # DEBUG
@@ -34,7 +34,8 @@ def erie_marathon_check():
         ACCESS_TOKEN, erie_marathon_summary["id"]
     )
     for key, value in erie_marathon_detailed.items():
-        print(key, ":", value, "\n")
+        print(key, ":", value)
+        print()
     # print("Erie Marathon description:", erie_marathon_detailed["description"])
 
 
@@ -60,6 +61,7 @@ def longest_workout_breaks(
     #     [activity["start_date_local"] for activity in all_activities],
     # )
 
+    print()
     print(
         "Processing %d activities from Strava from %s to %s (inclusive)."
         % (len(all_activities), start_date.date(), end_date.date() - timedelta(days=1))
@@ -114,7 +116,8 @@ def longest_workout_breaks(
 
     # Print the longest break
     longest_break = sorted_break_lengths[0]
-    print("\nThe longest break between workouts was", longest_break, "days.")
+    print()
+    print("The longest break between workouts was", longest_break, "days.")
     if len(breaks[longest_break]) > 1:
         print(
             "There are multiple (%d) breaks of this length. They were from:"
@@ -131,7 +134,8 @@ def longest_workout_breaks(
     # Print additional longest breaks if requested
     for i in range(1, min(additional_breaks + 1, len(sorted_break_lengths))):
         next_longest_break = sorted_break_lengths[i]
-        print("\nThe next longest break was", next_longest_break, "days.")
+        print()
+        print("The next longest break was", next_longest_break, "days.")
         if len(breaks[next_longest_break]) > 1:
             print(
                 "There are multiple (%d) breaks of this length. They were from:"
