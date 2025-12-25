@@ -41,7 +41,7 @@ def _is_cache_valid(cache: dict, start_date: datetime, end_date: datetime) -> bo
 
     Returns True if:
     - Cache is less than CACHE_TTL_HOURS old
-    - Requested [start_date, end_date) is fully contained within cached range
+    - Requested [start_date, end_date] is fully contained within cached range
     """
     try:
         cached_at = datetime.fromisoformat(cache["cached_at"])
@@ -69,12 +69,26 @@ def _is_cache_valid(cache: dict, start_date: datetime, end_date: datetime) -> bo
 def _filter_activities_by_date(
     activities: list, start_date: datetime, end_date: datetime
 ) -> list:
-    """Filter activities to only include those within [start_date, end_date)."""
+    """Filter activities to only include those within [start_date, end_date]."""
     filtered = []
+
+    # Normalize dates to start-of-day to ensure consistent behavior,
+    # regardless of whether input datetimes have time data
+    start_normalized = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_normalized = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Add 1 day to end_date to make it inclusive (include activities starting
+    # anywhere on the end_date day)
+    end_date_exclusive = end_normalized + timedelta(days=1)
+
     for activity in activities:
         activity_start = datetime.fromisoformat(activity["start_date"])
         # Convert to timestamp for comparison to handle timezone differences
-        if start_date.timestamp() <= activity_start.timestamp() < end_date.timestamp():
+        if (
+            start_normalized.timestamp()
+            <= activity_start.timestamp()
+            < end_date_exclusive.timestamp()
+        ):
             filtered.append(activity)
     return filtered
 
@@ -169,7 +183,6 @@ def get_strava_access_token(client_id, client_secret, refresh_token):
     return response.json()["access_token"]
 
 
-# TODO: consider standardizing end_date to be inclusive.
 def get_sorted_strava_activities(
     access_token,
     start_date,
@@ -179,7 +192,7 @@ def get_sorted_strava_activities(
     force_refresh=False,
 ) -> list:
     """
-    Get all Strava activities in [start_date, end_date) using the Strava API.
+    Get all Strava activities in [start_date, end_date] using the Strava API.
     Will return sorted by start date.
 
     Results are cached for 1 hour. Cache is used if:
@@ -202,7 +215,7 @@ def get_sorted_strava_activities(
         if cache and _is_cache_valid(cache, start_date, end_date):
             print(
                 f"Using cached Strava activities for range [{start_date.strftime('%m/%d/%Y')}, "
-                f"{end_date.strftime('%m/%d/%Y')})..."
+                f"{end_date.strftime('%m/%d/%Y')}]..."
             )
             all_activities = cache["activities"]
             # Filter to requested date range
@@ -231,16 +244,23 @@ def _fetch_activities_from_api(access_token, start_date, end_date, page_size) ->
 
     print(
         f"Fetching Strava activities in range [{start_date.strftime('%m/%d/%Y')}, "
-        f"{end_date.strftime('%m/%d/%Y')})..."
+        f"{end_date.strftime('%m/%d/%Y')}]..."
     )
+
+    # Normalize dates to start-of-day to ensure consistent behavior
+    start_normalized = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_normalized = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Strava API uses non-inclusive end date (before), so add 1 day
+    end_date_for_api = end_normalized + timedelta(days=1)
 
     all_activities = []
     page = 1
 
     while True:
         params = {
-            "after": start_date.timestamp(),
-            "before": end_date.timestamp(),
+            "after": start_normalized.timestamp(),
+            "before": end_date_for_api.timestamp(),
             "per_page": page_size,
             "page": page,
         }
@@ -263,7 +283,7 @@ def _fetch_activities_from_api(access_token, start_date, end_date, page_size) ->
         all_activities, key=lambda x: datetime.fromisoformat(x["start_date"])
     )
     print()
-    print(f"Fetched {len(all_activities)} Strava activities")
+    print(f"Fetched {len(all_activities)} Strava activities.")
 
     return all_activities
 
@@ -280,7 +300,7 @@ def _apply_sport_type_filter(activities: list, sport_type_filters) -> list:
     ]
     print()
     print(
-        f"Filtered down to {len(filtered_activities)} activities of sport type(s): {sport_type_filters}"
+        f"Filtered down to {len(filtered_activities)} activities of sport type(s): {sport_type_filters}."
     )
     return filtered_activities
 

@@ -154,7 +154,7 @@ def strava_to_gcal(
             print()
             print(
                 f"Creating Google Calendar event for activity '{activity['name']}' "
-                f"on {local_time_str}"
+                f"on {local_time_str}."
             )
             if not dry_run:
                 google_calendar_api.create_event(
@@ -173,7 +173,7 @@ def strava_to_gcal(
                 print(
                     f"Will update Google Calendar event for activity '{activity['name']}' "
                     f"on {local_time_str} "
-                    f"because of following field diffs (format: 'new' != 'existing'): {diff_str}"
+                    f"because of following field diffs (format: 'new' != 'existing'): {diff_str}."
                 )
                 if not dry_run:
                     google_calendar_api.update_event(
@@ -191,15 +191,15 @@ def strava_to_gcal(
             print(
                 "ERROR: Multiple Google Calendar events found for single Strava "
                 f"activity titled '{activity['name']}' "
-                f"on {local_time_str}"
+                f"on {local_time_str}."
             )
 
     print()
     print(
         f"{mode}Created {created_events} new events, "
         f"updated {updated_events} existing events, "
-        f"& skipped {non_modified_events} existing events — "
-        f"out of {len(all_activities)} activities"
+        f"& skipped {non_modified_events} existing events. "
+        f"Processed {len(all_activities)} activities."
     )
 
     return {
@@ -230,8 +230,7 @@ if __name__ == "__main__":
     # start_date = time_utils.izzys_strava_start_date()
     # Otherwise, we'll default to the last n days.
     start_date = time_utils.n_days_ago_from_today(30)
-    # End date is non-inclusive, so we'll set it to tomorrow.
-    end_date = time_utils.n_days_from_today(1)
+    end_date = time_utils.today()
 
     try:
         stats = strava_to_gcal(
@@ -243,18 +242,18 @@ if __name__ == "__main__":
         # Send success notification only if changes were made
         if DRY_RUN:
             print()
-            print("Skipping ntfy.sh notification (dry run mode)")
+            print("Skipping ntfy.sh notification (dry run mode).")
             exit(0)
         if not (stats["created"] > 0 or stats["updated"] > 0):
             print()
-            print("Skipping ntfy.sh notification, no changes were made")
+            print("Skipping ntfy.sh notification, no changes were made.")
             exit(0)
 
         title = "Strava to GCal - Success"
         message = (
             f"Successfully synced Strava activities to Google Calendar.\n\n"
             f"Dates: [{start_date.strftime('%m/%d/%Y')}, "
-            f"{end_date.strftime('%m/%d/%Y')})\n"
+            f"{end_date.strftime('%m/%d/%Y')}]\n"
             f"Events created: {stats['created']}\n"
             f"Events updated: {stats['updated']}\n"
             f"Events skipped: {stats['skipped']}\n"
@@ -284,6 +283,6 @@ if __name__ == "__main__":
             )
         else:
             print()
-            print("Skipping ntfy.sh failure notification (dry run mode)")
+            print("Skipping ntfy.sh failure notification (dry run mode).")
         # Re-raise the exception so the script still exits with an error code
         raise
