@@ -24,6 +24,19 @@ For the most common use case of syncing to both Google Sheets & Google Calendar:
 
 This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
 
+### Caching
+
+Strava API results are cached locally for 1 hour to reduce API calls. The cache is automatically used when the requested date range falls within what's already cached.
+
+To bypass the cache & fetch fresh data from Strava, use the `--force-refresh`/`-f` flag:
+
+```bash
+./strava_sync --force-refresh
+
+python -m scripts.strava_to_gcal -f
+python -m scripts.strava_to_pfitz_gsheet --force-refresh
+```
+
 ### Individual Scripts
 
 #### strava_to_pfitz_gsheet.py

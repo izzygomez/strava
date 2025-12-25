@@ -208,6 +208,7 @@ def get_sorted_strava_activities(
             all_activities = _filter_activities_by_date(
                 all_activities, start_date, end_date
             )
+            print()
             print(f"Found {len(all_activities)} activities in cache.")
             return _apply_sport_type_filter(all_activities, sport_type_filters)
 
@@ -261,7 +262,7 @@ def _fetch_activities_from_api(access_token, start_date, end_date, page_size) ->
         all_activities, key=lambda x: datetime.fromisoformat(x["start_date"])
     )
     print()
-    print(f"Fetched {len(all_activities)} Strava activities.")
+    print(f"Fetched {len(all_activities)} Strava activities")
 
     return all_activities
 
