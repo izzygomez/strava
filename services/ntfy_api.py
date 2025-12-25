@@ -32,7 +32,7 @@ def send_notification(topic_url, message, title=None, priority="default", tags=N
             headers=headers,
         )
         response.raise_for_status()
-        print(f"Notification sent successfully to {topic_url}")
+        print(f"Notification sent successfully to {topic_url}.")
         return True
     except requests.exceptions.RequestException as e:
         # Non-blocking - just log the error and continue

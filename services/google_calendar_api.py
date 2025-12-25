@@ -65,7 +65,7 @@ def create_event(service, calendar_id, event) -> None:
     """Create an event on the specified calendar."""
     try:
         event = service.events().insert(calendarId=calendar_id, body=event).execute()
-        print("Event created: %s" % (event.get("htmlLink")))
+        print("Event created: %s." % (event.get("htmlLink")))
     except HttpError as error:
         print(f"An error occurred: {error}")
 
@@ -139,7 +139,7 @@ def delete_all_events(service, calendar_id) -> None:
             service.events().delete(
                 calendarId=calendar_id, eventId=event["id"]
             ).execute()
-            print(f"Deleted event: {event['summary']}")
+            print(f"Deleted event: {event['summary']}.")
     except HttpError as error:
         print(f"An error occurred: {error}")
 
@@ -152,7 +152,7 @@ def update_event(service, calendar_id, event_id, event) -> None:
             .update(calendarId=calendar_id, eventId=event_id, body=event)
             .execute()
         )
-        print("Event updated: %s" % (updated_event.get("htmlLink")))
+        print("Event updated: %s." % (updated_event.get("htmlLink")))
     except HttpError as error:
         print(f"An error occurred: {error}")
 
@@ -165,7 +165,7 @@ def list_upcoming_events(service, max_results=10) -> None:
         local_tz = pytz.timezone("America/New_York")
         now = datetime.now(local_tz).astimezone(pytz.utc).isoformat()
         # print(f"{now=}")  # DEBUG
-        print(f"Getting the upcoming {max_results} events on primary calendar")
+        print(f"Getting the upcoming {max_results} events on primary calendar.")
         events_result = (
             service.events()
             .list(
@@ -190,7 +190,7 @@ def list_upcoming_events(service, max_results=10) -> None:
 
 def list_all_calendars(service) -> None:
     """List all calendars the user has access to."""
-    print("Getting all calendars")
+    print("Getting all calendars.")
     page_token = None
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
