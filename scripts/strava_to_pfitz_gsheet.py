@@ -4,6 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 import gspread
 from dateutil import parser
+from utils import time_utils
 
 from services import google_sheets_api, ntfy_api, strava_api
 from utils.load_env import (
@@ -50,7 +51,7 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
         try:
             parsed_date = parser.parse(date_value).date()
         except ValueError:
-            print(f"Skipping unrecognized date format: {date_value}")
+            print(f"Skipping unrecognized date format: {date_value}.")
             continue
 
         # Get activities for this date
@@ -112,8 +113,8 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
 
     print(
         f"Updated {len(requests)} cells & "
-        f"skipped {cells_skipped} existing cells — "
-        f"out of {len(activities)} activities"
+        f"skipped {cells_skipped} existing cells. "
+        f"Processed {len(activities)} activities."
     )
 
     return {
@@ -143,10 +144,8 @@ if __name__ == "__main__":
         print("📊 Syncing Strava activities to Pfitz training plan Google Sheet...")
         # These are currently set to beginning & end dates for the NYC '25 Marathon
         # Pfitz training block.
-        start_date = datetime(2025, 6, 30)
-        end_date = datetime(2026, 1, 1)
-        # remember that end_date is non-inclusive, so make sure end_date is
-        # one more than plan's actual end date
+        start_date = datetime(2025, 6, 30, tzinfo=time_utils.EASTERN)
+        end_date = datetime(2025, 12, 31, tzinfo=time_utils.EASTERN)
         print()
         sorted_activities = strava_api.get_sorted_strava_activities(
             access_token, start_date, end_date, force_refresh=args.force_refresh
@@ -167,8 +166,6 @@ if __name__ == "__main__":
         date_column, date_row = google_sheets_api.find_cell_index(sheet, "Date")
         strava_a1 = gspread.utils.rowcol_to_a1(strava_row, strava_column)
         date_a1 = gspread.utils.rowcol_to_a1(date_row, date_column)
-        # print(f"'Strava Links' header is at {strava_a1}")  # DEBUG
-        # print(f"'Date' header is at {date_a1}")  # DEBUG
 
         # Ensure the date column and strava column headers are on the same row
         if date_row != strava_row:
@@ -188,7 +185,7 @@ if __name__ == "__main__":
             message = (
                 f"Successfully synced Strava activities to Pfitz training sheet.\n\n"
                 f"Dates: [{start_date.strftime('%m/%d/%Y')}, "
-                f"{end_date.strftime('%m/%d/%Y')})\n"
+                f"{end_date.strftime('%m/%d/%Y')}]\n"
                 f"Cells updated: {stats['updated']}\n"
                 f"Cells skipped: {stats['skipped']}\n"
                 f"Activities processed: {stats['total_activities']}"
@@ -203,10 +200,10 @@ if __name__ == "__main__":
             )
         else:
             print()
-            print("Skipping ntfy.sh notification, no changes were made")
+            print("Skipping ntfy.sh notification, no changes were made.")
     except Exception as e:
         print()
-        print("Strava to Pfitz GSheet script failed. Sending failure notification")
+        print("Strava to Pfitz GSheet script failed. Sending failure notification.")
         # Send failure notification
         title = "Strava to Pfitz GSheet - Failed"
         error_trace = traceback.format_exc()

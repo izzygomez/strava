@@ -16,9 +16,9 @@ def erie_marathon_check():
     """just checking if Erie Marathon description still has URLs bc of associated Strava
     bug/regressions — seems like it got deleted grrrr"""
 
-    # Define your date range. End date is non-inclusive.
-    start_date = datetime(2024, 9, 8)
-    end_date = datetime(2024, 9, 9)
+    # Define your date range.
+    start_date = datetime(2024, 9, 8, tzinfo=time_utils.EASTERN)
+    end_date = datetime(2024, 9, 8, tzinfo=time_utils.EASTERN)
 
     all_activities = strava_api.get_sorted_strava_activities(
         ACCESS_TOKEN, start_date, end_date
@@ -43,7 +43,7 @@ def erie_marathon_check():
 def longest_workout_breaks(
     start_date: datetime, end_date: datetime, additional_breaks=0, sport_type=None
 ):
-    """Find the longest breaks in [start_date, end_date).
+    """Find the longest breaks in [start_date, end_date].
 
     Prints the longest break &, if specified, the next 'additional_breaks' longest breaks.
     """
@@ -63,8 +63,8 @@ def longest_workout_breaks(
 
     print()
     print(
-        "Processing %d activities from Strava from %s to %s (inclusive)."
-        % (len(all_activities), start_date.date(), end_date.date() - timedelta(days=1))
+        "Processing %d activities from Strava in [%s, %s]."
+        % (len(all_activities), start_date.date(), end_date.date())
     )
 
     # Dictionary to store all breaks between workouts & the pair of dates
@@ -151,6 +151,6 @@ def longest_workout_breaks(
 if __name__ == "__main__":
     # erie_marathon_check()
 
-    start_date = datetime(2024, 1, 1)
-    tomorrow = time_utils.n_days_from_today(1)
-    longest_workout_breaks(start_date, tomorrow, additional_breaks=3)
+    start_date = datetime(2024, 1, 1, tzinfo=time_utils.EASTERN)
+    today = time_utils.today()
+    longest_workout_breaks(start_date, today, additional_breaks=3)
