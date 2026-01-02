@@ -1,8 +1,6 @@
 # Strava Scripts
 
-Useful scripts for working with Strava data. A lot of functionality is based on my own personal use cases, but for the most part everything is written generically & with appropriate setup instructions to be adapted by others.
-
-Do note, though, that a lot of code here is still a 🚧 work-in-progress 🚧.
+Useful scripts for working with Strava data. A lot of functionality is based on my own personal use cases, but for the most part everything is written generically & with appropriate setup instructions to be adapted by others. Do note, though, that a lot of code here is still a 🚧 work-in-progress 🚧.
 
 ## Setup
 
@@ -11,8 +9,6 @@ See [SETUP.md](SETUP.md) for setup instructions.
 ## Usage
 
 Assuming all setup steps have been completed, the following scripts are available for use.
-
-**Note:** Some scripts send push notifications via [ntfy.sh](https://ntfy.sh/) when they complete (success or failure) with relevant stats & error details. See [SETUP.md](SETUP.md) for configuration.
 
 ### Convenience Script
 
@@ -23,19 +19,6 @@ For the most common use case of syncing to both Google Sheets & Google Calendar:
 ```
 
 This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
-
-### Caching
-
-Strava API results are cached locally for 1 hour to reduce API calls. The cache is automatically used when the requested date range falls within what's already cached.
-
-To bypass the cache & fetch fresh data from Strava, use the `--force-refresh`/`-f` flag:
-
-```bash
-./strava_sync --force-refresh
-
-python -m scripts.strava_to_gcal -f
-python -m scripts.strava_to_pfitz_gsheet --force-refresh
-```
 
 ### Individual Scripts
 
@@ -57,6 +40,22 @@ Script to create Google Calendar events for Strava activities on specified calen
 
 Misc tasks that are personalized to my own use case. Not recommended for general use.
 
+### Command line flags
+
+All `./strava_sync` scripts support the following command line flags:
+
+#### `--force-refresh`/`-f`
+
+Strava API results are cached locally for 1 hour. The cache is automatically used when the requested date range falls within what's already cached.
+
+Use the `--force-refresh`/`-f` flag to bypass the cache, fetch fresh data from Strava, & overwrite the cache:
+
+```bash
+./strava_sync --force-refresh
+python -m scripts.strava_to_gcal -f
+python -m scripts.strava_to_pfitz_gsheet --force-refresh
+```
+
 ## Pre-commit
 
 This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format & lint files before they are committed, & also as part of the required checks before a PR can be merged via [pre-commit.ci](https://pre-commit.ci/). See `.pre-commit-config.yaml` for configuration details.
@@ -67,3 +66,5 @@ This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format &
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
 - Add cmd line flag for skipping ntfy.sh notifications.
 - Add cmd line flag for dry run mode.
+- Stop hardcoding start & end dates in scripts; should pass them in as args.
+  - Related: use the same date range for both scripts so that cache can be shared more easily.
