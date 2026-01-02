@@ -17,7 +17,15 @@ from utils.load_env import (
 )
 
 
-def update_strava_links(sheet, strava_column, strava_row, date_column, activities):
+def update_strava_links(
+    sheet,
+    strava_column,
+    strava_row,
+    date_column,
+    activities,
+    start_date,
+    end_date,
+):
     """
     Update cells under 'Strava Links' with multiple Strava activity links, using
     a single batch_update call.
@@ -49,7 +57,15 @@ def update_strava_links(sheet, strava_column, strava_row, date_column, activitie
         if not date_value:
             continue
         try:
+            # date_value is the formatted cell value, which looks like "Dec 22",
+            # so year defaults to current year when we parse it. This causes
+            # some issues when start_date & end_date are in different years, so
+            # we fix this manually.
             parsed_date = parser.parse(date_value).date()
+            if parsed_date.month >= start_date.month:
+                parsed_date = parsed_date.replace(year=start_date.year)
+            else:
+                parsed_date = parsed_date.replace(year=end_date.year)
         except ValueError:
             print(f"Skipping unrecognized date format: {date_value}.")
             continue
@@ -142,10 +158,10 @@ if __name__ == "__main__":
         )
 
         print("📊 Syncing Strava activities to Pfitz training plan Google Sheet...")
-        # These are currently set to beginning & end dates for the NYC '25 Marathon
-        # Pfitz training block.
-        start_date = datetime(2025, 6, 30, tzinfo=time_utils.EASTERN)
-        end_date = datetime(2025, 12, 31, tzinfo=time_utils.EASTERN)
+        # These are currently set to beginning & end dates for the
+        # NYC United Half Marathon '26 Pfitz training block.
+        start_date = datetime(2025, 12, 22, tzinfo=time_utils.EASTERN)
+        end_date = datetime(2026, 3, 29, tzinfo=time_utils.EASTERN)
         print()
         sorted_activities = strava_api.get_sorted_strava_activities(
             access_token, start_date, end_date, force_refresh=args.force_refresh
@@ -176,7 +192,13 @@ if __name__ == "__main__":
         # Update the 'Strava Links' column with Strava activity links
         print()
         stats = update_strava_links(
-            sheet, strava_column, strava_row, date_column, sorted_activities
+            sheet,
+            strava_column,
+            strava_row,
+            date_column,
+            sorted_activities,
+            start_date,
+            end_date,
         )
 
         # Send success notification only if changes were made
