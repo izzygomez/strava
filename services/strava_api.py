@@ -22,8 +22,28 @@ def _load_cache() -> dict | None:
         return None
 
 
-def _save_cache(start_date: datetime, end_date: datetime, activities: list) -> None:
+def _save_cache(
+    start_date: datetime,
+    end_date: datetime,
+    activities: list,
+    force_refresh: bool,
+) -> None:
     """Save activities to cache file with metadata."""
+    # We don't save if existing cache already covers this range & is still
+    # valid. Skip this check if force_refresh is True, since that means we
+    # explicitly asked for fresh data, so we should always overwrite the cache.
+    if not force_refresh:
+        existing_cache = _load_cache()
+        if (
+            existing_cache
+            and _get_cache_status(existing_cache, start_date, end_date) == "valid"
+        ):
+            print(
+                f"Skipping cache save (existing cache already covers range "
+                f"[{start_date.strftime('%m/%d/%Y')}, {end_date.strftime('%m/%d/%Y')}])."
+            )
+            return
+
     CACHE_DIR.mkdir(exist_ok=True)
     cache_data = {
         "cached_at": datetime.now(timezone.utc).isoformat(),
@@ -33,22 +53,33 @@ def _save_cache(start_date: datetime, end_date: datetime, activities: list) -> N
     }
     with open(CACHE_FILE, "w") as f:
         json.dump(cache_data, f)
+    print(
+        f"Saved {len(activities)} activities to cache for range "
+        f"[{start_date.strftime('%m/%d/%Y')}, {end_date.strftime('%m/%d/%Y')}]."
+    )
 
 
-def _is_cache_valid(cache: dict, start_date: datetime, end_date: datetime) -> bool:
+def _get_cache_status(
+    cache: dict | None, start_date: datetime, end_date: datetime
+) -> str:
     """
     Check if cache is valid for the requested date range.
 
-    Returns True if:
-    - Cache is less than CACHE_TTL_HOURS old
-    - Requested [start_date, end_date] is fully contained within cached range
+    Returns:
+    - "valid" if cache is usable
+    - "expired" if cache is older than TTL
+    - "range_mismatch" if requested range is not fully contained in cached range
+    - "missing" if cache doesn't exist or is invalid
     """
+    if cache is None:
+        return "missing"
+
     try:
         cached_at = datetime.fromisoformat(cache["cached_at"])
         cached_start = datetime.fromisoformat(cache["start_date"])
         cached_end = datetime.fromisoformat(cache["end_date"])
     except (KeyError, ValueError):
-        return False
+        return "missing"
 
     # cached_at should always be set to UTC for comparison
     if cached_at.tzinfo is None:
@@ -57,13 +88,16 @@ def _is_cache_valid(cache: dict, start_date: datetime, end_date: datetime) -> bo
     # check if cache is expired
     cache_age = datetime.now(timezone.utc) - cached_at
     if cache_age > timedelta(hours=CACHE_TTL_HOURS):
-        return False
+        return "expired"
 
-    # use timestamps for comparison
-    return (
+    # check if requested range is fully contained in cached range
+    if (
         cached_start.timestamp() <= start_date.timestamp()
         and cached_end.timestamp() >= end_date.timestamp()
-    )
+    ):
+        return "valid"
+
+    return "range_mismatch"
 
 
 def _filter_activities_by_date(
@@ -210,9 +244,12 @@ def get_sorted_strava_activities(
     [3] https://developers.strava.com/docs/reference/#api-Activities-getActivityById
     """
     # check cache first, unless force_refresh is True
-    if not force_refresh:
+    if force_refresh:
+        print("Skipping cache (--force-refresh flag passed)...")
+    else:
         cache = _load_cache()
-        if cache and _is_cache_valid(cache, start_date, end_date):
+        cache_status = _get_cache_status(cache, start_date, end_date)
+        if cache_status == "valid":
             print(
                 f"Using cached Strava activities for range [{start_date.strftime('%m/%d/%Y')}, "
                 f"{end_date.strftime('%m/%d/%Y')}]..."
@@ -225,14 +262,22 @@ def get_sorted_strava_activities(
             print()
             print(f"Found {len(all_activities)} activities in cache.")
             return _apply_sport_type_filter(all_activities, sport_type_filters)
+        elif cache_status == "expired":
+            print("Skipping cache (expired, older than TTL)...")
+        elif cache_status == "range_mismatch":
+            print(
+                "Skipping cache (requested date range not fully contained in cache)..."
+            )
 
     # cache miss or force_refresh -> fetch from API
+    print()
     all_activities = _fetch_activities_from_api(
         access_token, start_date, end_date, page_size
     )
 
     # save to cache, before sport_type filtering to maximize cache reuse
-    _save_cache(start_date, end_date, all_activities)
+    print()
+    _save_cache(start_date, end_date, all_activities, force_refresh)
 
     return _apply_sport_type_filter(all_activities, sport_type_filters)
 
