@@ -9,7 +9,7 @@ from utils import time_utils
 from services import google_sheets_api, ntfy_api, strava_api
 from utils.load_env import (
     GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
-    GOOGLE_SHEETS_SHEET_NAME,
+    GOOGLE_SHEETS_SPREADSHEET_ID,
     NTFY_TOPIC_URL,
     STRAVA_CLIENT_ID,
     STRAVA_CLIENT_SECRET,
@@ -172,7 +172,7 @@ if __name__ == "__main__":
         # a new project, enabling the Google Sheets API, & creating a service account.
         sheet = google_sheets_api.connect_to_google_sheets(
             GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
-            GOOGLE_SHEETS_SHEET_NAME,
+            GOOGLE_SHEETS_SPREADSHEET_ID,
         )
 
         # Find the 'Strava Links' & 'Date' header cell locations
