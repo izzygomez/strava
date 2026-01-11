@@ -58,7 +58,7 @@ Use the `--force-refresh`/`-f` flag to bypass the cache, fetch fresh data from S
 
 ```shell
 ./strava_sync --force-refresh
-python -m scripts.strava_to_gcal --start-date 2025-12-22 --end-date 2026-03-29 --timezone ET -f
+python -m scripts.strava_to_gcal --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone ET -f
 ```
 
 ## Pre-commit
