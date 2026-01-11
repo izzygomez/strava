@@ -6,7 +6,7 @@ import requests
 
 CACHE_DIR = Path(__file__).parent.parent / ".strava_cache"
 CACHE_FILE = CACHE_DIR / "strava_activities_cache.json"
-CACHE_TTL_HOURS = 1
+CACHE_TTL_MINUTES = 60
 
 
 def _load_cache() -> dict | None:
@@ -87,7 +87,7 @@ def _get_cache_status(
 
     # check if cache is expired
     cache_age = datetime.now(timezone.utc) - cached_at
-    if cache_age > timedelta(hours=CACHE_TTL_HOURS):
+    if cache_age > timedelta(minutes=CACHE_TTL_MINUTES):
         return "expired"
 
     # check if requested range is fully contained in cached range
@@ -226,17 +226,19 @@ def get_sorted_strava_activities(
     force_refresh=False,
 ) -> list:
     """
-    Get all Strava activities in [start_date, end_date] using the Strava API.
-    Will return sorted by start date.
+    Get Strava activities in [start_date, end_date] via the Strava API, sorted
+    by start date. If `sport_type_filters` is provided, only activities of the
+    specified sport types will be returned; otherwise, all activities will be
+    returned.
 
-    Results are cached for 1 hour. Cache is used if:
+    Results are cached for CACHE_TTL_MINUTES. Cache is used if:
     - force_refresh is False
-    - Cache exists and is less than 1 hour old
+    - Cache exists and is less than CACHE_TTL_MINUTES old
     - Requested date range is fully contained within cached date range
 
-    Note that this endpoint [1] returns an array of SummaryActivity [2] objects,
-    which may not contain all the data associated with an activity. If you need
-    more details, you can use the /activities/{id} endpoint [3] in
+    Note that API endpoint [1] used here returns an array of SummaryActivity [2]
+    objects, which may not contain all the data associated with an activity. If
+    you need more details, you can use the /activities/{id} API endpoint [3] in
     get_strava_activity() to get the full activity details.
 
     [1] https://developers.strava.com/docs/reference/#api-Activities-getLoggedInAthleteActivities
@@ -245,7 +247,7 @@ def get_sorted_strava_activities(
     """
     # check cache first, unless force_refresh is True
     if force_refresh:
-        print("Skipping cache (--force-refresh flag passed)...")
+        print("Skipping cache, --force-refresh flag passed...")
     else:
         cache = _load_cache()
         cache_status = _get_cache_status(cache, start_date, end_date)
@@ -263,10 +265,10 @@ def get_sorted_strava_activities(
             print(f"Found {len(all_activities)} activities in cache.")
             return _apply_sport_type_filter(all_activities, sport_type_filters)
         elif cache_status == "expired":
-            print("Skipping cache (expired, older than TTL)...")
+            print("Skipping cache, expired, older than TTL...")
         elif cache_status == "range_mismatch":
             print(
-                "Skipping cache (requested date range not fully contained in cache)..."
+                "Skipping cache, requested date range not fully contained in cache..."
             )
 
     # cache miss or force_refresh -> fetch from API
