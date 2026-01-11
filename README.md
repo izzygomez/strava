@@ -14,7 +14,7 @@ Assuming all setup steps have been completed, the following scripts are availabl
 
 For the most common use case of syncing to both Google Sheets & Google Calendar:
 
-```bash
+```shell
 ./strava_sync
 ```
 
@@ -22,15 +22,21 @@ This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
 
 ### Individual Scripts
 
+When running scripts individually, you must specify the required date & timezone arguments.
+
 #### strava_to_pfitz_gsheet.py
 
-`python -m scripts.strava_to_pfitz_gsheet`
+```shell
+python -m scripts.strava_to_pfitz_gsheet --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone {ET, PT, LOCAL, ...}
+```
 
 Script to convert Strava activities into clickable links in Google Sheets tracking a Pfitzinger training plan. For an example of what this script does, see the rightmost column of [izzy.gg/vancouver25](https://izzy.gg/vancouver25).
 
 #### strava_to_gcal.py
 
-`python -m scripts.strava_to_gcal`
+```shell
+python -m scripts.strava_to_gcal --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone {ET, PT, LOCAL, ...}
+```
 
 Script to create Google Calendar events for Strava activities on specified calendar.
 
@@ -42,7 +48,7 @@ Misc tasks that are personalized to my own use case. Not recommended for general
 
 ### Command line flags
 
-All `./strava_sync` scripts support the following command line flags:
+Scripts called by `./strava_sync` support the following flags:
 
 #### `--force-refresh`/`-f`
 
@@ -50,10 +56,9 @@ Strava API results are cached locally for 1 hour. The cache is automatically use
 
 Use the `--force-refresh`/`-f` flag to bypass the cache, fetch fresh data from Strava, & overwrite the cache:
 
-```bash
+```shell
 ./strava_sync --force-refresh
-python -m scripts.strava_to_gcal -f
-python -m scripts.strava_to_pfitz_gsheet --force-refresh
+python -m scripts.strava_to_gcal --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone ET -f
 ```
 
 ## Pre-commit
@@ -66,5 +71,3 @@ This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format &
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
 - Add cmd line flag for skipping ntfy.sh notifications.
 - Add cmd line flag for dry run mode.
-- Stop hardcoding start & end dates in scripts; should pass them in as args.
-  - Related: use the same date range for both scripts so that cache can be shared more easily.

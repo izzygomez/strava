@@ -150,7 +150,26 @@ if __name__ == "__main__":
         action="store_true",
         help="Bypass Strava API cache & fetch fresh data",
     )
+    arg_parser.add_argument(
+        "--start-date",
+        required=True,
+        help="Start date in YYYY-MM-DD format",
+    )
+    arg_parser.add_argument(
+        "--end-date",
+        required=True,
+        help="End date in YYYY-MM-DD format",
+    )
+    arg_parser.add_argument(
+        "--timezone",
+        required=True,
+        help="Timezone alias (LOCAL, ET, PT, CT, MT, UTC)",
+    )
     args = arg_parser.parse_args()
+
+    tz = time_utils.parse_timezone_arg(args.timezone)
+    start_date = time_utils.parse_date_arg(args.start_date, tz)
+    end_date = time_utils.parse_date_arg(args.end_date, tz)
 
     try:
         access_token = strava_api.get_strava_access_token(
@@ -158,10 +177,6 @@ if __name__ == "__main__":
         )
 
         print("📊 Syncing Strava activities to Pfitz training plan Google Sheet...")
-        # These are currently set to beginning & end dates for the
-        # NYC United Half Marathon '26 Pfitz training block.
-        start_date = datetime(2025, 12, 22, tzinfo=time_utils.EASTERN)
-        end_date = datetime(2026, 3, 29, tzinfo=time_utils.EASTERN)
         print()
         sorted_activities = strava_api.get_sorted_strava_activities(
             access_token, start_date, end_date, force_refresh=args.force_refresh

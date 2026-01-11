@@ -220,17 +220,30 @@ if __name__ == "__main__":
         action="store_true",
         help="Bypass Strava API cache & fetch fresh data",
     )
+    arg_parser.add_argument(
+        "--start-date",
+        required=True,
+        help="Start date in YYYY-MM-DD format",
+    )
+    arg_parser.add_argument(
+        "--end-date",
+        required=True,
+        help="End date in YYYY-MM-DD format",
+    )
+    arg_parser.add_argument(
+        "--timezone",
+        required=True,
+        help="Timezone alias (LOCAL, ET, PT, CT, MT, UTC)",
+    )
     args = arg_parser.parse_args()
 
     # Toggle this to preview changes without modifying Google Calendar or
     # sending notifications
     DRY_RUN = False
 
-    # Uncomment this line if I want to run this script on all activities.
-    # start_date = time_utils.izzys_strava_start_date()
-    # Otherwise, we'll default to the last n days.
-    start_date = time_utils.n_days_ago_from_today(30)
-    end_date = time_utils.today()
+    tz = time_utils.parse_timezone_arg(args.timezone)
+    start_date = time_utils.parse_date_arg(args.start_date, tz)
+    end_date = time_utils.parse_date_arg(args.end_date, tz)
 
     try:
         stats = strava_to_gcal(

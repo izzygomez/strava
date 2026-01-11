@@ -1,11 +1,23 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from zoneinfo import ZoneInfo
 
 # Common timezone constants
 UTC = timezone.utc
 EASTERN = ZoneInfo("America/New_York")  # ET (EST/EDT)
+CENTRAL = ZoneInfo("America/Chicago")  # CT (CST/CDT)
+MOUNTAIN = ZoneInfo("America/Denver")  # MT (MST/MDT)
 PACIFIC = ZoneInfo("America/Los_Angeles")  # PT (PST/PDT)
 LOCAL_TZ = datetime.now().astimezone().tzinfo  # System's local timezone
+
+# Timezone aliases for CLI args
+TIMEZONE_ALIASES = {
+    "LOCAL": LOCAL_TZ,
+    "ET": EASTERN,
+    "CT": CENTRAL,
+    "MT": MOUNTAIN,
+    "PT": PACIFIC,
+    "UTC": UTC,
+}
 
 
 def local_start_of_day(dt: datetime) -> datetime:
@@ -42,3 +54,23 @@ def n_days_from_today(n: int) -> datetime:
 def n_days_ago_from_today(n: int) -> datetime:
     """Return start of n days ago from today (local tz) as UTC datetime."""
     return today() - timedelta(days=n)
+
+
+def parse_timezone_arg(tz_str: str) -> tzinfo:
+    """Parse timezone alias (ET, PT, LOCAL, etc.) into ZoneInfo."""
+    tz = TIMEZONE_ALIASES.get(tz_str.upper())
+    if not tz:
+        valid = ", ".join(TIMEZONE_ALIASES.keys())
+        raise ValueError(f"Invalid timezone: '{tz_str}'. Valid options: {valid}")
+    return tz
+
+
+def parse_date_arg(date_str: str, tz: tzinfo) -> datetime:
+    """Parse YYYY-MM-DD string into timezone-aware datetime (start of day)."""
+    try:
+        parsed = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError(
+            f"Invalid date format: '{date_str}'. Expected YYYY-MM-DD (e.g., 2025-12-22)"
+        )
+    return local_start_of_day(parsed.replace(tzinfo=tz))
