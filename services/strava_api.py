@@ -265,7 +265,7 @@ def get_sorted_strava_activities(
             print(f"Found {len(all_activities)} activities in cache.")
             return _apply_sport_type_filter(all_activities, sport_type_filters)
         elif cache_status == "expired":
-            print("Skipping cache, expired, older than TTL...")
+            print("Skipping cache, expired & older than TTL...")
         elif cache_status == "range_mismatch":
             print(
                 "Skipping cache, requested date range not fully contained in cache..."
