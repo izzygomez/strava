@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pathlib import Path
 
 import google
 import pytz
@@ -17,7 +18,8 @@ SCOPES = [
     "https://www.googleapis.com/auth/calendar.readonly",
     "https://www.googleapis.com/auth/calendar.events",
 ]
-TOKEN_FILE_NAME = "credentials/strava-to-gcal-token.json"
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+TOKEN_FILE_NAME = str(_PROJECT_ROOT / "credentials" / "strava-to-gcal-token.json")
 
 
 def _run_oauth_flow() -> (
