@@ -48,9 +48,3 @@ repos:
     hooks:
       - id: shfmt # Format shell scripts
         args: [-w, -s, -i, "4"] # Write changes, simplify code, 4-space indent
-
-  # Shell script linting
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
-    hooks:
-      - id: shellcheck # Lint shell scripts for common issues

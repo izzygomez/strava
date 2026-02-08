@@ -1,12 +1,15 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 # Usage: this file should be imported at the beginning of any script that uses
 # environment variables via a `from util.load_env import {vars...}` statement.
 
-# Load environment variables from a .env file. `override` flag allows us to update .env vars.
-load_dotenv(override=True)
+# Load environment variables from the project root .env file, regardless of
+# working directory from which the script is invoked.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(_PROJECT_ROOT / ".env", override=True)
 
 
 def get_env_var(var_name):
