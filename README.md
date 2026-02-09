@@ -69,5 +69,5 @@ This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format &
 
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
-- Add cmd line flag for skipping ntfy.sh notifications.
+- Add cmd line flag for skipping ntfy.sh notifications. Or make default behavior to not send notifications unless error, current behavior can be set by a flag.
 - Add cmd line flag for dry run mode.
