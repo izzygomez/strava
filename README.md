@@ -17,7 +17,7 @@ Assuming all setup steps have been completed, the following scripts are availabl
 For the most common use case of syncing to both Google Sheets & Google Calendar:
 
 ```shell
-./strava_sync
+./strava-sync.sh
 ```
 
 This runs both `strava_to_pfitz_gsheet` & `strava_to_gcal` in sequence.
@@ -50,7 +50,7 @@ Misc tasks that are personalized to my own use case. Not recommended for general
 
 ### Command line flags
 
-Scripts called by `./strava_sync` support the following flags:
+Scripts called by `./strava-sync.sh` support the following flags:
 
 #### `--force-refresh`/`-f`
 
@@ -59,13 +59,21 @@ Strava API results are cached locally for 1 hour. The cache is automatically use
 Use the `--force-refresh`/`-f` flag to bypass the cache, fetch fresh data from Strava, & overwrite the cache:
 
 ```shell
-./strava_sync --force-refresh
+./strava-sync.sh --force-refresh
 python -m scripts.strava_to_gcal --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone ET -f
+```
+
+#### `--notify-all`
+
+By default, scripts send ntfy.sh notifications only on failures. Use `--notify-all` to also send success notifications when updates are made:
+
+```shell
+./strava-sync.sh --notify-all
+python -m scripts.strava_to_pfitz_gsheet --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone ET --notify-all
 ```
 
 ## TODOs
 
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
-- Add cmd line flag for skipping ntfy.sh notifications. Or make default behavior to not send notifications unless error, current behavior can be set by a flag.
 - Add cmd line flag for dry run mode.

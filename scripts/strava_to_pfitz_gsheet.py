@@ -165,6 +165,11 @@ if __name__ == "__main__":
         required=True,
         help="Timezone alias (LOCAL, ET, PT, CT, MT, UTC)",
     )
+    arg_parser.add_argument(
+        "--notify-all",
+        action="store_true",
+        help="Send ntfy.sh notifications for success & failures. By default, only failures send notifications.",
+    )
     args = arg_parser.parse_args()
 
     tz = time_utils.parse_timezone_arg(args.timezone)
@@ -216,8 +221,8 @@ if __name__ == "__main__":
             end_date,
         )
 
-        # Send success notification only if changes were made
-        if stats["updated"] > 0:
+        # Send success notification only when enabled & changes were made.
+        if args.notify_all and stats["updated"] > 0:
             title = "Strava to Pfitz GSheet - Success"
             message = (
                 f"Successfully synced Strava activities to Pfitz training sheet.\n\n"
@@ -235,9 +240,14 @@ if __name__ == "__main__":
                 priority="default",
                 tags=["white_check_mark"],
             )
+        elif stats["updated"] == 0:
+            print()
+            print("Skipping ntfy.sh success notification, no changes were made.")
         else:
             print()
-            print("Skipping ntfy.sh notification, no changes were made.")
+            print(
+                "Skipping ntfy.sh success notification, only sending failure notifications."
+            )
     except Exception as e:
         print()
         print("Strava to Pfitz GSheet script failed. Sending failure notification.")
