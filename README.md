@@ -1,5 +1,7 @@
 # Strava Scripts
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+
 Useful scripts for working with Strava data. A lot of functionality is based on my own personal use cases, but for the most part everything is written generically & with appropriate setup instructions to be adapted by others. Do note, though, that a lot of code here is still a 🚧 work-in-progress 🚧.
 
 ## Setup
@@ -60,10 +62,6 @@ Use the `--force-refresh`/`-f` flag to bypass the cache, fetch fresh data from S
 ./strava_sync --force-refresh
 python -m scripts.strava_to_gcal --start-date {YYYY-MM-DD} --end-date {YYYY-MM-DD} --timezone ET -f
 ```
-
-## Pre-commit
-
-This repo uses [`pre-commit`](https://pre-commit.com/) to automatically format & lint files before they are committed, & also as part of the required checks before a PR can be merged via [pre-commit.ci](https://pre-commit.ci/). See `.pre-commit-config.yaml` for configuration details.
 
 ## TODOs
 
