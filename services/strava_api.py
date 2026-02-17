@@ -273,6 +273,10 @@ def get_sorted_strava_activities(
             print(
                 "Skipping cache, requested date range not fully contained in cache..."
             )
+        elif cache_status == "missing":
+            print("Cache missing, fetching from API...")
+        else:
+            raise ValueError(f"Unknown cache status: {cache_status}")
 
     # cache miss or force_refresh -> fetch from API
     print()
