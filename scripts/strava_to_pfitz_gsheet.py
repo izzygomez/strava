@@ -74,7 +74,21 @@ def update_strava_links(
 
         # Only update if there are activities for this date
         if activities_for_date:
-            cell_text = "\n".join([a["text"] for a in activities_for_date])
+            cell_text = "\n".join(a["text"] for a in activities_for_date)
+
+            # Specify each link's start index explicitly.
+            text_format_runs = []
+            start_index = 0
+            for idx, a in enumerate(activities_for_date):
+                text_format_runs.append(
+                    {
+                        "format": {"link": {"uri": a["url"]}},
+                        "startIndex": start_index,
+                    }
+                )
+                start_index += len(a["text"])
+                if idx < len(activities_for_date) - 1:
+                    start_index += 1  # newline separator
 
             # Check if the cell already has this text value.
             # NOTE: this is not checking the formatting of the cell, i.e. the
@@ -90,18 +104,7 @@ def update_strava_links(
                     "values": [
                         {
                             "userEnteredValue": {"stringValue": cell_text},
-                            "textFormatRuns": [
-                                {
-                                    "format": {"link": {"uri": a["url"]}},
-                                    # This is necessary to ensure the hyperlink
-                                    # for each individual activity starts in the
-                                    # right index. Otherwise, the hyperlinks
-                                    # will overlap & all links won't be properly
-                                    # clickable.
-                                    "startIndex": cell_text.find(a["text"]),
-                                }
-                                for a in activities_for_date
-                            ],
+                            "textFormatRuns": text_format_runs,
                         }
                     ]
                 }

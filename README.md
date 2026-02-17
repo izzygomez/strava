@@ -63,13 +63,13 @@ Misc tasks that are personalized to my own use case. Not recommended for general
 
 Scripts called by `./strava-sync.sh` support the following flags:
 
-| Flag              | Short | Value                                  | Description                                                                                        |
-| ----------------- | ----- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--start-date`    | `-s`  | `YYYY-MM-DD`                           | Start date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.              |
-| `--end-date`      | `-e`  | `YYYY-MM-DD`                           | End date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.                |
-| `--timezone`      | `-t`  | `LOCAL`, `ET`, `PT`, `CT`, `MT`, `UTC` | Timezone used when parsing date arguments. If omitted, `strava-sync.sh` uses its built-in default. |
-| `--force-refresh` | `-f`  | -                                      | Bypass the Strava activity cache & fetch fresh data from the API.                                  |
-| `--notify-all`    | `-n`  | -                                      | Send ntfy.sh success notifications in addition to failure notifications.                           |
+| Flag              | Short | Value                                  | Description                                                              |
+| ----------------- | ----- | -------------------------------------- | ------------------------------------------------------------------------ |
+| `--start-date`    | `-s`  | `YYYY-MM-DD`                           | Start date of the sync range, inclusive.                                 |
+| `--end-date`      | `-e`  | `YYYY-MM-DD`                           | End date of the sync range, inclusive.                                   |
+| `--timezone`      | `-t`  | `LOCAL`, `ET`, `PT`, `CT`, `MT`, `UTC` | Timezone used when parsing date arguments.                               |
+| `--force-refresh` | `-f`  | -                                      | Bypass the Strava activity cache & fetch fresh data from the API.        |
+| `--notify-all`    | `-n`  | -                                      | Send ntfy.sh success notifications in addition to failure notifications. |
 
 </details>
 
