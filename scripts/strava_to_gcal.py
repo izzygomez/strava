@@ -1,11 +1,10 @@
-import argparse
 import traceback
 from datetime import datetime, timedelta
 
 import pytz
 
 from services import google_calendar_api, ntfy_api, strava_api
-from utils import time_utils
+from utils import cli_args, time_utils
 from utils.load_env import (
     GOOGLE_CALENDAR_STRAVA_CALENDAR_ID,
     NTFY_TOPIC_URL,
@@ -211,34 +210,8 @@ def strava_to_gcal(
 
 
 if __name__ == "__main__":
-    arg_parser = argparse.ArgumentParser(
-        description="Sync Strava activities to Google Calendar"
-    )
-    arg_parser.add_argument(
-        "-f",
-        "--force-refresh",
-        action="store_true",
-        help="Bypass Strava API cache & fetch fresh data",
-    )
-    arg_parser.add_argument(
-        "--start-date",
-        required=True,
-        help="Start date in YYYY-MM-DD format",
-    )
-    arg_parser.add_argument(
-        "--end-date",
-        required=True,
-        help="End date in YYYY-MM-DD format",
-    )
-    arg_parser.add_argument(
-        "--timezone",
-        required=True,
-        help="Timezone alias (LOCAL, ET, PT, CT, MT, UTC)",
-    )
-    arg_parser.add_argument(
-        "--notify-all",
-        action="store_true",
-        help="Send ntfy.sh notifications for success & failures. By default, only failures send notifications.",
+    arg_parser = cli_args.build_sync_arg_parser(
+        "Sync Strava activities to Google Calendar"
     )
     args = arg_parser.parse_args()
 
