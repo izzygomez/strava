@@ -52,7 +52,8 @@ def _save_cache(
         "activities": activities,
     }
     with open(CACHE_FILE, "w") as f:
-        json.dump(cache_data, f)
+        json.dump(cache_data, f, indent=2)
+        f.write("\n")
     print(
         f"Saved {len(activities)} activities to cache for range "
         f"[{start_date.strftime('%m/%d/%Y')}, {end_date.strftime('%m/%d/%Y')}]."
