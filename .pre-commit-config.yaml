@@ -48,3 +48,9 @@ repos:
     hooks:
       - id: shfmt # Format shell scripts
         args: [-w, -s, -i, "4"] # Write changes, simplify code, 4-space indent
+
+  # Prettier for formatting
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: "v3.8.1"
+    hooks:
+      - id: prettier
