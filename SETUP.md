@@ -14,30 +14,12 @@ pip install -r requirements.txt
 </details>
 
 <details>
-<summary><h2>Pre-commit</h2></summary>
-
-This project uses [pre-commit](https://pre-commit.com/) to run code formatting & linting checks before each commit. To install the pre-commit hooks, run:
-
-```bash
-pre-commit install
-```
-
-To run checks manually on all files:
-
-```bash
-pre-commit run --all-files --verbose
-```
-
-</details>
-
-<details>
 <summary><h2>Strava Integration</h2></summary>
 
 Relevant links: [Strava Developers landing page](https://developers.strava.com/), [API reference](https://developers.strava.com/docs/reference/).
 
 1. Create a new application on the [Strava API settings page](https://www.strava.com/settings/api) to get a `client_id` & a `client_secret`.
 1. Follow instructions on the [Strava API authentication page](https://developers.strava.com/docs/authentication/) to get a `refresh_token`.
-
    1. On Web, open the following URL with the appropriate values set:
 
       `https://www.strava.com/oauth/authorize?client_id={CLIENT_ID}&response_type=code&redirect_uri=http://localhost&approval_prompt=force&scope=read_all,activity:read_all,activity:write`
@@ -86,13 +68,11 @@ I decided to create separate Google Cloud Platform projects for the Google Sheet
 1. Enable the Google Calendar API for this new project.
 
 1. Following the [Google Calendar API Python Quickstart](https://developers.google.com/calendar/api/quickstart/python) instructions:
-
    1. Under the [Google Auth platform > Clients page](https://console.cloud.google.com/auth/clients), create a new OAuth 2.0 Client ID. Set the application type to "Desktop app".
 
    1. Download the credentials JSON & save in this repo. Set the `GOOGLE_CALENDAR_JSON_CREDENTIALS_FULL_PATH` in `.env` to the full path (i.e. `realpath credentials/{FILENAME}.json`) of the JSON file.
 
    1. Don't run script yet, finish rest of setup instructions. But note that on first run, you'll be redirected to authenticate with Google. A `strava-to-gcal-token.json` file will then automatically be created in `credentials/`, so ensure that you run from project root.
-
       1. Note: if there are any issues with the Google authentication flow, try visiting the URL in incognito mode.
 
 1. Set the `GOOGLE_CALENDAR_STRAVA_CALENDAR_ID` in `.env` to the ID of the Google Calendar you want to add events to. If set to your gmail address, events will be added to your primary calendar. But it's preferable to create a dedicated calendar & use the `*@group.calendar.google.com` ID. This ID can be found on the calendar settings page in Google Calendar.
