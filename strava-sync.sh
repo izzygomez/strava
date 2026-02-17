@@ -1,7 +1,8 @@
 #!/bin/zsh
 
 # Convenience script to run all Strava sync scripts in sequence.
-# Usage: ./strava_sync [--force-refresh | -f]
+# Usage: ./strava-sync.sh [--force-refresh | -f] [--notify-all]
+# By default, only failure ntfy.sh notifications are sent.
 
 set -e # Exit on any error
 

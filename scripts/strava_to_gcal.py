@@ -235,6 +235,11 @@ if __name__ == "__main__":
         required=True,
         help="Timezone alias (LOCAL, ET, PT, CT, MT, UTC)",
     )
+    arg_parser.add_argument(
+        "--notify-all",
+        action="store_true",
+        help="Send ntfy.sh notifications for success & failures. By default, only failures send notifications.",
+    )
     args = arg_parser.parse_args()
 
     # Toggle this to preview changes without modifying Google Calendar or
@@ -259,7 +264,13 @@ if __name__ == "__main__":
             exit(0)
         if not (stats["created"] > 0 or stats["updated"] > 0):
             print()
-            print("Skipping ntfy.sh notification, no changes were made.")
+            print("Skipping ntfy.sh success notification, no changes were made.")
+            exit(0)
+        if not args.notify_all:
+            print()
+            print(
+                "Skipping ntfy.sh success notification, only sending failure notifications."
+            )
             exit(0)
 
         title = "Strava to GCal - Success"
