@@ -3,7 +3,7 @@
 # Convenience script to run all Strava sync scripts in sequence.
 # Usage: ./strava-sync.sh [SCRIPT_FLAGS...]
 # Forwards all flags supported by the underlying Python scripts, including:
-#   -f/--force-refresh, --notify-all, --start-date, --end-date, --timezone
+# --force-refresh, --notify-all, --start-date, --end-date, --timezone
 # If --start-date/--end-date/--timezone are omitted, defaults below are used.
 
 set -e # Exit on any error

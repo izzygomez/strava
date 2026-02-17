@@ -65,11 +65,11 @@ Scripts called by `./strava-sync.sh` support the following flags:
 
 | Flag              | Short | Value                                  | Description                                                                                        |
 | ----------------- | ----- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--start-date`    | -     | `YYYY-MM-DD`                           | Start date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.              |
-| `--end-date`      | -     | `YYYY-MM-DD`                           | End date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.                |
-| `--timezone`      | -     | `LOCAL`, `ET`, `PT`, `CT`, `MT`, `UTC` | Timezone used when parsing date arguments. If omitted, `strava-sync.sh` uses its built-in default. |
+| `--start-date`    | `-s`  | `YYYY-MM-DD`                           | Start date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.              |
+| `--end-date`      | `-e`  | `YYYY-MM-DD`                           | End date of the sync range. If omitted, `strava-sync.sh` uses its built-in default.                |
+| `--timezone`      | `-t`  | `LOCAL`, `ET`, `PT`, `CT`, `MT`, `UTC` | Timezone used when parsing date arguments. If omitted, `strava-sync.sh` uses its built-in default. |
 | `--force-refresh` | `-f`  | -                                      | Bypass the Strava activity cache & fetch fresh data from the API.                                  |
-| `--notify-all`    | -     | -                                      | Send ntfy.sh success notifications in addition to failure notifications.                           |
+| `--notify-all`    | `-n`  | -                                      | Send ntfy.sh success notifications in addition to failure notifications.                           |
 
 </details>
 
