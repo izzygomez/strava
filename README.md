@@ -77,3 +77,4 @@ python -m scripts.strava_to_pfitz_gsheet --start-date {YYYY-MM-DD} --end-date {Y
 - Write script to automatically text me ~1 hr after running activity upload if I didn't specify gear (i.e. shoes).
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
 - Add cmd line flag for dry run mode.
+- Add rate-limiting to Strava API calls to gracefully handle 429 errors.

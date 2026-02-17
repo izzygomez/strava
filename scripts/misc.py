@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 from datetime import datetime
+import re
 
 from services import strava_api
 from utils import time_utils
@@ -133,6 +134,7 @@ def write_all_workout_activities_to_file():
     log_activities(activities, file_name=file_name)
 
 
+### One-time fixes
 def fix_soccer_activities():
     """
     Iterate through all 'Workout' activities that have soccer emoji & update
@@ -208,6 +210,120 @@ def fix_volleyball_activities():
         )
 
 
+def fix_description_url_dots(
+    dry_run: bool = True,
+    max_activities: int | None = None,
+    race_only: bool = False,
+):
+    """
+    Replace '(dot)' with '.' only inside URL-like text in activity descriptions.
+
+    This is a one-time fix. The context here is that for some time — while
+    Strava was getting their shit together with respect to URL support in
+    activity titles & descriptions (see [1]) — I ended up using '(dot)' instead
+    of '.' in URLs to get around the temporary URL ban, because I didn't want to
+    lose my data. However, when URL support was restored, Strava didn't go back
+    & fix the activities it had deleted before, so there was an explicit need
+    for this manual fix. This is what this function is for.
+
+    Defaults to dry run mode & prints proposed changes without updating Strava.
+    Uses detailed activity fetches because activities returned by
+    get_sorted_strava_activities() omits description text.
+
+    If race_only=True, only inspect activities with workout types marked as
+    race. If max_activities is set, only scan that many activities from the
+    filtered list. These two flags are useful because otherwise I'd hit my rate
+    limit pretty quickly (making an extra get_strava_activity() API call for
+    each activity).
+
+    [1] https://web.archive.org/web/20260211070415/https://support.strava.com/hc/en-us/articles/34413026584461-Links-on-Strava
+    """
+    start_date = time_utils.izzys_strava_start_date()
+    end_date = time_utils.today()
+    activities = strava_api.get_sorted_strava_activities(
+        ACCESS_TOKEN, start_date, end_date
+    )
+    if race_only:
+        # workout_type is legacy but still used by Strava to mark race workouts:
+        # run race = 1, ride race = 11. from:
+        # https://communityhub.strava.com/developers-api-7/identifying-workouts-from-summaryactivity-object-2001
+        race_workout_types = {1, 11}
+        activities = [
+            activity
+            for activity in activities
+            if activity.get("workout_type") in race_workout_types
+        ]
+        print(
+            f"Filtered to {len(activities)} race activity summaries "
+            "(workout_type in {1, 11})."
+        )
+    if max_activities is not None:
+        activities = activities[:max_activities]
+        print(
+            f"Scanning first {len(activities)} activities "
+            f"(max_activities={max_activities})."
+        )
+    else:
+        print(f"Scanning all {len(activities)} activities.")
+
+    # URL-like token containing one or more "(dot)" sequences.
+    # Examples matched:
+    # - "https://example(dot)com/path"
+    # - "www.example(dot)com"
+    # - "example(dot)com"
+    broken_url_pattern = re.compile(
+        r"((?:https?://|www\.)?\b[\w-]+(?:\(dot\)[\w-]+)+(?:/[^\s]*)?)",
+        re.IGNORECASE,
+    )
+
+    candidates_found = 0
+    inspected_count = 0
+    updated_count = 0
+    for activity in activities:
+        inspected_count += 1
+        detailed_activity = strava_api.get_strava_activity(ACCESS_TOKEN, activity["id"])
+        description = detailed_activity.get("description")
+        if not description or "(dot)" not in description:
+            continue
+
+        def _fix_match(match):
+            return match.group(1).replace("(dot)", ".")
+
+        updated_description, replacements = broken_url_pattern.subn(
+            _fix_match, description
+        )
+        if replacements == 0 or updated_description == description:
+            continue
+
+        candidates_found += 1
+        print()
+        print(
+            f"Activity {activity['id']} - '{activity['name']}' has {replacements} "
+            "URL replacement(s)."
+        )
+        print(f"Strava URL: {strava_api.get_activity_url(activity['id'])}")
+        # print(f"Before: {description}")  # DEBUG
+        # print(f"After:  {updated_description}")  # DEBUG
+
+        if dry_run:
+            continue
+
+        strava_api.update_strava_activity(
+            ACCESS_TOKEN,
+            activity_id=activity["id"],
+            data={"description": updated_description},
+        )
+        updated_count += 1
+
+    print()
+    print(f"Inspected {inspected_count} detailed activities.")
+    print(f"Found {candidates_found} activity description(s) with broken URL text.")
+    if dry_run:
+        print("Dry run mode enabled; no Strava activity descriptions were updated.")
+    else:
+        print(f"Updated {updated_count} activity description(s).")
+
+
 if __name__ == "__main__":
     ### Misc functions that I'm currently toying with
     # log_2025_activities_to_console()
@@ -218,4 +334,5 @@ if __name__ == "__main__":
     # fix_soccer_activities()
     # fix_basketball_activities()
     # fix_volleyball_activities()
+    # fix_description_url_dots(dry_run=True, race_only=True)
     pass
