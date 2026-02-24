@@ -76,7 +76,28 @@ def update_strava_links(
         if activities_for_date:
             cell_text = "\n".join(a["text"] for a in activities_for_date)
 
-            # Specify each link's start index explicitly.
+            # Build textFormatRuns to apply a separate hyperlink to each
+            # activity within the cell. A "run" is a contiguous span of text
+            # that shares the same formatting — in our case, each run is one
+            # activity's text styled as a hyperlink. Each run specifies a
+            # startIndex (in the cell's text) where that run's formatting
+            # begins; it implicitly ends where the next run starts (or at
+            # end-of-text).
+            #
+            # startIndex gotcha: the Sheets API measures startIndex in
+            # UTF-16 code units, NOT Unicode code points [1]. Python's len()
+            # counts code points, where every character — including emojis —
+            # counts as 1. But in UTF-16, characters above U+FFFF (most emojis)
+            # are encoded as a surrogate pair (2 code units) [2]. Using len()
+            # would undercount, placing a format run boundary in the middle of
+            # an emoji's surrogate pair & breaking its rendering.
+            #
+            # We use encode("utf-16-le") to get the raw UTF-16 byte length,
+            # then divide by 2 (each code unit = 2 bytes) to get the code
+            # unit count the API expects.
+            #
+            # [1] https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/cells#TextFormatRun
+            # [2] https://en.wikipedia.org/wiki/UTF-16
             text_format_runs = []
             start_index = 0
             for idx, a in enumerate(activities_for_date):
@@ -86,7 +107,7 @@ def update_strava_links(
                         "startIndex": start_index,
                     }
                 )
-                start_index += len(a["text"])
+                start_index += len(a["text"].encode("utf-16-le")) // 2
                 if idx < len(activities_for_date) - 1:
                     start_index += 1  # newline separator
 
