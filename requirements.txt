@@ -7,6 +7,7 @@ gspread
 oauth2client
 python-dateutil
 python-dotenv
+pytz
 requests
 # pre-commit linting & formatting
 ruff
