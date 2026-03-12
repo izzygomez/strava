@@ -80,4 +80,6 @@ Scripts called by `./strava-sync.sh` support the following flags:
 - Figure out how to automatically trigger scripts when new activities are uploaded to Strava using webhooks.
 - Add command-line flag for dry run mode.
 - Add rate-limiting to Strava API calls to gracefully handle 429 errors.
+- Related, add retries to API calls (both Google & Strava). Script runs often fail with transient network errors, could be handled gracefully.
+- Add misc script to enumerate all runs associated with a particular pair of shoes.
 </details>
