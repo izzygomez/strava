@@ -249,8 +249,8 @@ if __name__ == "__main__":
         title = "Strava to GCal - Success"
         message = (
             f"Successfully synced Strava activities to Google Calendar.\n\n"
-            f"Dates: [{start_date.strftime('%m/%d/%Y')}, "
-            f"{end_date.strftime('%m/%d/%Y')}]\n"
+            f"Dates: [{start_date.astimezone().strftime('%m/%d/%Y')}, "
+            f"{end_date.astimezone().strftime('%m/%d/%Y')}] in {start_date.astimezone().strftime('%Z')}\n"
             f"Events created: {stats['created']}\n"
             f"Events updated: {stats['updated']}\n"
             f"Events skipped: {stats['skipped']}\n"
