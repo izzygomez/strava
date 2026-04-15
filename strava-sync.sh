@@ -17,7 +17,7 @@ END_DATE_GSHEET="2026-03-29"
 # Dynamic last-30-days window (includes today).
 START_DATE_GCAL="$(date -v-30d +%Y-%m-%d)"
 END_DATE_GCAL="$(date +%Y-%m-%d)"
-TIMEZONE="ET"
+TIMEZONE="LOCAL"
 
 # Set defaults first; any user-provided args later in "$@" override these.
 default_args_gsheet=(

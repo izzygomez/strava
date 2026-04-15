@@ -39,8 +39,8 @@ def _save_cache(
             and _get_cache_status(existing_cache, start_date, end_date) == "valid"
         ):
             print(
-                f"Skipping cache save (existing cache already covers range "
-                f"[{start_date.strftime('%m/%d/%Y')}, {end_date.strftime('%m/%d/%Y')}])."
+                f"Skipping cache save (existing cache already covers date range "
+                f"[{start_date.astimezone().strftime('%m/%d/%Y')}, {end_date.astimezone().strftime('%m/%d/%Y')}] in {start_date.astimezone().strftime('%Z')})."
             )
             return
 
@@ -55,8 +55,8 @@ def _save_cache(
         json.dump(cache_data, f, indent=2)
         f.write("\n")
     print(
-        f"Saved {len(activities)} activities to cache for range "
-        f"[{start_date.strftime('%m/%d/%Y')}, {end_date.strftime('%m/%d/%Y')}]."
+        f"Saved {len(activities)} activities to cache for date range "
+        f"[{start_date.astimezone().strftime('%m/%d/%Y')}, {end_date.astimezone().strftime('%m/%d/%Y')}] in {start_date.astimezone().strftime('%Z')}."
     )
 
 
@@ -107,20 +107,15 @@ def _filter_activities_by_date(
     """Filter activities to only include those within [start_date, end_date]."""
     filtered = []
 
-    # Normalize dates to start-of-day to ensure consistent behavior,
-    # regardless of whether input datetimes have time data
-    start_normalized = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_normalized = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
-
     # Add 1 day to end_date to make it inclusive (include activities starting
     # anywhere on the end_date day)
-    end_date_exclusive = end_normalized + timedelta(days=1)
+    end_date_exclusive = end_date + timedelta(days=1)
 
     for activity in activities:
         activity_start = datetime.fromisoformat(activity["start_date"])
         # Convert to timestamp for comparison to handle timezone differences
         if (
-            start_normalized.timestamp()
+            start_date.timestamp()
             <= activity_start.timestamp()
             < end_date_exclusive.timestamp()
         ):
@@ -256,8 +251,8 @@ def get_sorted_strava_activities(
         cache_status = _get_cache_status(cache, start_date, end_date)
         if cache_status == "valid":
             print(
-                f"Using cached Strava activities for range [{start_date.strftime('%m/%d/%Y')}, "
-                f"{end_date.strftime('%m/%d/%Y')}]..."
+                f"Using cached Strava activities in date range [{start_date.astimezone().strftime('%m/%d/%Y')}, "
+                f"{end_date.astimezone().strftime('%m/%d/%Y')}] in {start_date.astimezone().strftime('%Z')}..."
             )
             all_activities = cache["activities"]
             # Filter to requested date range
@@ -297,23 +292,19 @@ def _fetch_activities_from_api(access_token, start_date, end_date, page_size) ->
     headers = _create_headers(access_token)
 
     print(
-        f"Fetching Strava activities in range [{start_date.strftime('%m/%d/%Y')}, "
-        f"{end_date.strftime('%m/%d/%Y')}]..."
+        f"Fetching Strava activities in date range [{start_date.astimezone().strftime('%m/%d/%Y')}, "
+        f"{end_date.astimezone().strftime('%m/%d/%Y')}] in {start_date.astimezone().strftime('%Z')}..."
     )
 
-    # Normalize dates to start-of-day to ensure consistent behavior
-    start_normalized = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_normalized = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
-
     # Strava API uses non-inclusive end date (before), so add 1 day
-    end_date_for_api = end_normalized + timedelta(days=1)
+    end_date_for_api = end_date + timedelta(days=1)
 
     all_activities = []
     page = 1
 
     while True:
         params = {
-            "after": start_normalized.timestamp(),
+            "after": start_date.timestamp(),
             "before": end_date_for_api.timestamp(),
             "per_page": page_size,
             "page": page,
