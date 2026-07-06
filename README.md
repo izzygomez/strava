@@ -82,4 +82,5 @@ Scripts called by `./strava-sync.sh` support the following flags:
 - Add rate-limiting to Strava API calls to gracefully handle 429 errors.
 - Related, add retries to API calls (both Google & Strava). Script runs often fail with transient network errors, could be handled gracefully.
 - Add misc script to enumerate all runs associated with a particular pair of shoes.
+
 </details>
