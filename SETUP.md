@@ -59,7 +59,7 @@ I decided to create separate Google Cloud Platform projects for the Google Sheet
 
 1. Locate the Google Sheet you want to modify with the `strava_to_pfitz_gsheet.py` script. Copy the spreadsheet ID from the URL (the string between `/d/` & `/edit`, e.g. `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_HERE/edit`). Set `GOOGLE_SHEETS_SPREADSHEET_ID` in `.env` to this ID.
 
-1. Add service account email address to sheet with the `Editor` role.
+1. Add service account email address to sheet with the `Editor` role. For convenience, the service account email address is stored in the `SERVICE_ACCOUNT` environment variable in `.env`.
 
 ### Integrations for strava_to_gcal.py
 
