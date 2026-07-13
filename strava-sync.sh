@@ -11,9 +11,9 @@ set -e # Exit on any error
 # Resolve the repo root from the script's location (works even when invoked via PATH)
 STRAVA_DIR="${0:A:h}"
 
-# Training block dates for NYC United Half Marathon '26 Pfitz training plan.
-START_DATE_GSHEET="2025-12-22"
-END_DATE_GSHEET="2026-03-29"
+# Training block dates for CIM '26 Pfitz training plan.
+START_DATE_GSHEET="2026-07-06"
+END_DATE_GSHEET="2027-01-10"
 # Dynamic last-30-days window (includes today).
 START_DATE_GCAL="$(date -v-30d +%Y-%m-%d)"
 END_DATE_GCAL="$(date +%Y-%m-%d)"
@@ -32,8 +32,8 @@ default_args_gcal=(
 )
 
 echo "🏃 Running all Strava sync scripts..."
-# echo
-# PYTHONPATH="$STRAVA_DIR" python -m scripts.strava_to_pfitz_gsheet "${default_args_gsheet[@]}" "$@"
+echo
+PYTHONPATH="$STRAVA_DIR" python -m scripts.strava_to_pfitz_gsheet "${default_args_gsheet[@]}" "$@"
 echo
 PYTHONPATH="$STRAVA_DIR" python -m scripts.strava_to_gcal "${default_args_gcal[@]}" "$@"
 echo
