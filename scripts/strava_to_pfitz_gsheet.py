@@ -1,11 +1,12 @@
 import traceback
 from collections import defaultdict
 from datetime import datetime
+
 import gspread
 from dateutil import parser
-from utils import cli_args, time_utils
 
 from services import google_sheets_api, ntfy_api, strava_api
+from utils import cli_args, time_utils
 from utils.load_env import (
     GOOGLE_SHEETS_JSON_KEYFILE_FULL_PATH,
     GOOGLE_SHEETS_SPREADSHEET_ID,
@@ -251,7 +252,7 @@ if __name__ == "__main__":
         # Send failure notification
         title = "Strava to Pfitz GSheet - Failed"
         error_trace = traceback.format_exc()
-        message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+        message = f"Script failed with error:\n\n{e!s}\n\n{error_trace}"
         print()
         ntfy_api.send_notification(
             NTFY_TOPIC_URL, message, title=title, priority="high", tags=["x", "warning"]

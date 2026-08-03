@@ -1,7 +1,7 @@
 import os
+import re
 from collections import defaultdict
 from datetime import datetime
-import re
 
 from services import strava_api
 from utils import time_utils

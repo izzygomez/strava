@@ -15,7 +15,7 @@ load_dotenv(_PROJECT_ROOT / ".env", override=True)
 def get_env_var(var_name):
     value = os.getenv(var_name)
     if value is None:
-        raise EnvironmentError(f"Missing required environment variable: {var_name}")
+        raise OSError(f"Missing required environment variable: {var_name}")
     return value.strip()
 
 

@@ -269,7 +269,7 @@ if __name__ == "__main__":
         if not DRY_RUN:
             title = "Strava to GCal - Failed"
             error_trace = traceback.format_exc()
-            message = f"Script failed with error:\n\n{str(e)}\n\n{error_trace}"
+            message = f"Script failed with error:\n\n{e!s}\n\n{error_trace}"
             print()
             ntfy_api.send_notification(
                 NTFY_TOPIC_URL,
