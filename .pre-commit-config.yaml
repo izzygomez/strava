@@ -41,9 +41,9 @@ repos:
 
   # Ruff for linting and formatting (replaces Black, isort, and flake8)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.16.1
     hooks:
-      - id: ruff # Linter (replaces flake8)
+      - id: ruff-check # Linter (replaces flake8)
         args: [--fix] # Auto-fix issues when possible
       - id: ruff-format # Formatter (replaces Black + isort)
 
@@ -56,6 +56,6 @@ repos:
 
   # Prettier for formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: "v3.9.4"
+    rev: "v3.9.6"
     hooks:
       - id: prettier

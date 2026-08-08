@@ -43,7 +43,7 @@ def izzys_strava_start_date() -> datetime:
 
 def today() -> datetime:
     """Return start of today (local timezone) as a UTC datetime."""
-    return local_start_of_day(datetime.now())
+    return local_start_of_day(datetime.now(LOCAL_TZ))
 
 
 def n_days_from_today(n: int) -> datetime:
@@ -68,9 +68,9 @@ def parse_timezone_arg(tz_str: str) -> tzinfo:
 def parse_date_arg(date_str: str, tz: tzinfo) -> datetime:
     """Parse YYYY-MM-DD string into timezone-aware datetime (start of day)."""
     try:
-        parsed = datetime.strptime(date_str, "%Y-%m-%d")
+        parsed = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=tz)
     except ValueError:
         raise ValueError(
             f"Invalid date format: '{date_str}'. Expected YYYY-MM-DD (e.g., 2025-12-22)"
         )
-    return local_start_of_day(parsed.replace(tzinfo=tz))
+    return local_start_of_day(parsed)

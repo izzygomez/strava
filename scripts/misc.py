@@ -1,7 +1,7 @@
 import os
+import re
 from collections import defaultdict
 from datetime import datetime
-import re
 
 from services import strava_api
 from utils import time_utils
@@ -70,7 +70,7 @@ def log_activities(activities, file_name=""):
         # SPORT_TYPE_TO_EMOJI dict.
         unmapped_sport_types = sorted(
             sport_type
-            for sport_type in activities_by_sport_type.keys()
+            for sport_type in activities_by_sport_type
             if sport_type not in mapped_sport_type_set
         )
         if not unmapped_sport_types:
