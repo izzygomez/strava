@@ -16,7 +16,7 @@ def _load_cache() -> dict | None:
     try:
         with open(CACHE_FILE, "r") as f:
             return json.load(f)
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         print(f"Error loading cache: {e}")
         print("Skipping cache load.")
         return None
@@ -219,7 +219,7 @@ def get_sorted_strava_activities(
     access_token,
     start_date,
     end_date,
-    sport_type_filters=set(),
+    sport_type_filters=None,
     page_size=200,
     force_refresh=False,
 ) -> list:
@@ -243,6 +243,9 @@ def get_sorted_strava_activities(
     [2] https://developers.strava.com/docs/reference/#api-models-SummaryActivity
     [3] https://developers.strava.com/docs/reference/#api-Activities-getActivityById
     """
+    if sport_type_filters is None:
+        sport_type_filters = set()
+
     # check cache first, unless force_refresh is True
     if force_refresh:
         print("Skipping cache, --force-refresh flag passed...")

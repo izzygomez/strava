@@ -63,8 +63,8 @@ def longest_workout_breaks(
 
     print()
     print(
-        "Processing %d activities from Strava in [%s, %s]."
-        % (len(all_activities), start_date.date(), end_date.date())
+        f"Processing {len(all_activities)} activities from Strava in "
+        f"[{start_date.date()}, {end_date.date()}]."
     )
 
     # Dictionary to store all breaks between workouts & the pair of dates
@@ -120,15 +120,15 @@ def longest_workout_breaks(
     print("The longest break between workouts was", longest_break, "days.")
     if len(breaks[longest_break]) > 1:
         print(
-            "There are multiple (%d) breaks of this length. They were from:"
-            % len(breaks[longest_break])
+            f"There are multiple ({len(breaks[longest_break])}) breaks of this "
+            "length. They were from:"
         )
         for longest_break_dates in breaks[longest_break]:
-            print("\t- %s to %s." % tuple(longest_break_dates))
+            print(f"\t- {longest_break_dates[0]} to {longest_break_dates[1]}.")
     else:
         longest_break_dates = breaks[longest_break][0]
         print(
-            "This break was from %s to %s." % tuple(longest_break_dates),
+            f"This break was from {longest_break_dates[0]} to {longest_break_dates[1]}.",
         )
 
     # Print additional longest breaks if requested
@@ -138,14 +138,14 @@ def longest_workout_breaks(
         print("The next longest break was", next_longest_break, "days.")
         if len(breaks[next_longest_break]) > 1:
             print(
-                "There are multiple (%d) breaks of this length. They were from:"
-                % len(breaks[next_longest_break])
+                f"There are multiple ({len(breaks[next_longest_break])}) breaks of "
+                "this length. They were from:"
             )
             for break_dates in breaks[next_longest_break]:
-                print("\t- %s to %s." % tuple(break_dates))
+                print(f"\t- {break_dates[0]} to {break_dates[1]}.")
         else:
             break_dates = breaks[next_longest_break][0]
-            print("This break was from %s to %s." % tuple(break_dates))
+            print(f"This break was from {break_dates[0]} to {break_dates[1]}.")
 
 
 if __name__ == "__main__":

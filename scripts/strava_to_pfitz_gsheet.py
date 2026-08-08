@@ -1,6 +1,6 @@
 import traceback
 from collections import defaultdict
-from datetime import datetime
+from datetime import date
 
 import gspread
 from dateutil import parser
@@ -40,9 +40,7 @@ def update_strava_links(
     # format: { date -> [{"text": <cell_text>, "url": <url>}, ...] }
     activities_by_date = defaultdict(list)
     for activity in activities:
-        activity_date = datetime.strptime(
-            activity["start_date_local"][:10], "%Y-%m-%d"
-        ).date()
+        activity_date = date.fromisoformat(activity["start_date_local"][:10])
 
         emoji = strava_api.get_emoji_for_sport_type(activity["sport_type"])
         cell_text = f"{emoji} • {activity['name']}"

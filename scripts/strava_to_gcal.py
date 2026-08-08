@@ -1,3 +1,4 @@
+import sys
 import traceback
 from datetime import datetime, timedelta
 
@@ -80,8 +81,7 @@ def strava_to_gcal(
 ) -> dict:
     service = google_calendar_api.create_google_calendar_service()
     if not service:
-        print("Failed to get Google Calendar service.")
-        raise
+        raise RuntimeError("Failed to get Google Calendar service.")
 
     mode = "[DRY RUN] " if dry_run else ""
     print(f"📅 {mode}Syncing Strava activities to Google Calendar...")
@@ -234,17 +234,17 @@ if __name__ == "__main__":
         if DRY_RUN:
             print()
             print("Skipping ntfy.sh notification (dry run mode).")
-            exit(0)
+            sys.exit(0)
         if not (stats["created"] > 0 or stats["updated"] > 0):
             print()
             print("Skipping ntfy.sh success notification, no changes were made.")
-            exit(0)
+            sys.exit(0)
         if not args.notify_all:
             print()
             print(
                 "Skipping ntfy.sh success notification, only sending failure notifications."
             )
-            exit(0)
+            sys.exit(0)
 
         title = "Strava to GCal - Success"
         message = (

@@ -67,7 +67,7 @@ def create_event(service, calendar_id, event) -> None:
     """Create an event on the specified calendar."""
     try:
         event = service.events().insert(calendarId=calendar_id, body=event).execute()
-        print("Event created: %s." % (event.get("htmlLink")))
+        print(f"Event created: {event.get('htmlLink')}.")
     except HttpError as error:
         print(f"An error occurred: {error}")
 
@@ -154,7 +154,7 @@ def update_event(service, calendar_id, event_id, event) -> None:
             .update(calendarId=calendar_id, eventId=event_id, body=event)
             .execute()
         )
-        print("Event updated: %s." % (updated_event.get("htmlLink")))
+        print(f"Event updated: {updated_event.get('htmlLink')}.")
     except HttpError as error:
         print(f"An error occurred: {error}")
 
