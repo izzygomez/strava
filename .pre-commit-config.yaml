@@ -1,8 +1,9 @@
+################################################################################
 # See pre-commit.com for documentation.
 #
 # Some helpful commands:
 # - `pre-commit install` to install the hooks.
-# - `pre-commit run --all-files --verbose` to run the hooks manually.
+# - `pre-commit run -a/--all-files [--verbose]` to run the hooks manually.
 # - `git commit -n/--no-verify` to skip the hooks.
 # - `pre-commit autoupdate` to update the hooks to the latest version.
 # - `pre-commit clean` to clean out cached files.
@@ -11,14 +12,15 @@
 #   `git ls-files | grep -E '{files}' | grep -v -E '{exclude}'`
 #   where {files} is the regex of files to process, & {exclude} is the regex of
 #   files to exclude.
+################################################################################
 
 # https://pre-commit.ci/ configuration
 ci:
-  autofix_prs: false
+  autofix_prs: false # this doesn't work well with stacked PRs
   autoupdate_schedule: monthly
 
 repos:
-  # Pre-commit's built-in collection
+  # pre-commit-hooks — general file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -39,22 +41,22 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
 
-  # Ruff for linting and formatting (replaces Black, isort, and flake8)
+  # Ruff — Python linting & formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.1
     hooks:
-      - id: ruff-check # Linter (replaces flake8)
-        args: [--fix] # Auto-fix issues when possible
-      - id: ruff-format # Formatter (replaces Black + isort)
+      - id: ruff-check # linter
+        args: [--fix] # auto-fix issues when possible
+      - id: ruff-format # formatter
 
-  # Shell script formatting
+  # shfmt — shell script formatting
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.13.1-1
     hooks:
-      - id: shfmt # Format shell scripts
-        args: [-w, -s, -i, "4"] # Write changes, simplify code, 4-space indent
+      - id: shfmt
+        args: [-w, -s, -i, "4"] # write changes, simplify code, 4-space indent
 
-  # Prettier for formatting
+  # Prettier — multi-language formatting
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: "v3.9.6"
     hooks:
