@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import UTC, datetime, timedelta, tzinfo
 from zoneinfo import ZoneInfo
 
 # Common timezone constants
-UTC = timezone.utc
+UTC = UTC
 EASTERN = ZoneInfo("America/New_York")  # ET (EST/EDT)
 CENTRAL = ZoneInfo("America/Chicago")  # CT (CST/CDT)
 MOUNTAIN = ZoneInfo("America/Denver")  # MT (MST/MDT)

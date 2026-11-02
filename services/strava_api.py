@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import requests
@@ -46,7 +46,7 @@ def _save_cache(
 
     CACHE_DIR.mkdir(exist_ok=True)
     cache_data = {
-        "cached_at": datetime.now(timezone.utc).isoformat(),
+        "cached_at": datetime.now(UTC).isoformat(),
         "start_date": start_date.isoformat(),
         "end_date": end_date.isoformat(),
         "activities": activities,
@@ -84,10 +84,10 @@ def _get_cache_status(
 
     # cached_at should always be set to UTC for comparison
     if cached_at.tzinfo is None:
-        cached_at = cached_at.replace(tzinfo=timezone.utc)
+        cached_at = cached_at.replace(tzinfo=UTC)
 
     # check if cache is expired
-    cache_age = datetime.now(timezone.utc) - cached_at
+    cache_age = datetime.now(UTC) - cached_at
     if cache_age > timedelta(minutes=CACHE_TTL_MINUTES):
         return "expired"
 
